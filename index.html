@@ -1367,6 +1367,7 @@ function mostrarTela(id) {
     t.style.display = 'none';
   });
   const tela = document.getElementById(id);
+  if (!tela) { console.error('Tela nao encontrada:', id); return; }
   tela.style.display = 'flex';
   setTimeout(() => tela.classList.add('ativa'), 10);
   window.scrollTo(0, 0);
@@ -2436,9 +2437,14 @@ function verificarE1a() {
 }
 
 function avancarE1b() {
-  popularClassificacao();
-  mostrarTela('tela-etapa1b');
-  verificarE1b();
+  try {
+    popularClassificacao();
+    mostrarTela('tela-etapa1b');
+    verificarE1b();
+  } catch(e) {
+    console.error('avancarE1b erro:', e);
+    toast('Erro: ' + e.message);
+  }
 }
 
 // ========================================
@@ -2535,6 +2541,14 @@ async function salvarEtapa1() {
 function voltarInicio() {
   mostrarTela('tela-inicio');
 
+// Garantir que botão de avançar funciona
+document.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('btn-e1a-avancar');
+  if (btn) btn.addEventListener('click', function() {
+    if (!btn.disabled) avancarE1b();
+  });
+});
+
 // Popular lista de classificação
 function popularClassificacao() {
   const sel = document.getElementById('e1-classificacao');
@@ -2608,7 +2622,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;">
-  Essa Vaga É Minha — v7 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v8 · Adriano Aquino Advocacia
 </div>
 
 </body>
