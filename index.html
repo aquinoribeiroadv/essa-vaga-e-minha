@@ -528,20 +528,20 @@ body::before {
         Em conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD)</strong>, informamos que os dados pessoais coletados neste formulário serão utilizados <strong>exclusivamente</strong> para a elaboração dos documentos necessários ao ajuizamento de ação judicial perante o Tribunal de Justiça da Paraíba (TJPB), por meio do sistema PJe.<br><br>
         Seus dados <strong>não serão compartilhados com terceiros</strong> para qualquer outra finalidade.<br><br>
         <strong>Controlador e Encarregado de Dados Pessoais:</strong><br>
-        Adriano Aquino Ribeiro — <a href="/cdn-cgi/l/email-protection#5c3d2d293532332e353e39352e333d382a1c3b313d3530723f3331" style="color:var(--dourado);"><span class="__cf_email__" data-cfemail="630212160a0d0c110a01060a110c02071523040e020a0f4d000c0e">[email&#160;protected]</span></a>
+        Adriano Aquino Ribeiro — aquinoribeiroadv&#64;gmail.com
       </div>
 
       <!-- ACEITE -->
-      <div class="aceite-row" onclick="toggleAceite()" id="aceite-row">
-        <div class="aceite-check" id="aceite-check"></div>
-        <div class="aceite-texto">Li e concordo com o uso dos meus dados conforme o Aviso de Privacidade acima.</div>
+      <div class="aceite-row" id="aceite-row" style="cursor:pointer;">
+        <div class="aceite-check" id="aceite-check" onclick="toggleAceite(); event.stopPropagation();"></div>
+        <div class="aceite-texto" onclick="toggleAceite()">Li e concordo com o uso dos meus dados conforme o Aviso de Privacidade acima.</div>
       </div>
 
       <!-- CPF -->
       <div class="campo">
         <label>CPF</label>
         <input type="tel" id="cpf-input" placeholder="000.000.000-00"
-          maxlength="14" oninput="formatarCPF(this)" inputmode="numeric" />
+          maxlength="14" oninput="formatarCPF(this)" onkeyup="formatarCPF(this)" inputmode="numeric" autocomplete="off" />
         <div class="campo-erro" id="cpf-erro">CPF inválido. Verifique e tente novamente.</div>
       </div>
 
@@ -1424,11 +1424,12 @@ function validarCPFNum(cpf) {
 // ═══════════════════════════════════════════════
 function toggleAceite() {
   const chk = document.getElementById('aceite-check');
-  chk.classList.toggle('marcado');
-  chk.textContent = chk.classList.contains('marcado') ? '✓' : '';
+  const marcado = chk.classList.toggle('marcado');
+  chk.textContent = marcado ? '✓' : '';
+  chk.style.background = marcado ? 'var(--dourado)' : 'transparent';
+  chk.style.color = marcado ? 'var(--azul)' : '';
   const cpfOk = validarCPFNum(document.getElementById('cpf-input').value);
-  const aceito = chk.classList.contains('marcado');
-  document.getElementById('btn-continuar').disabled = !(aceito && cpfOk);
+  document.getElementById('btn-continuar').disabled = !(marcado && cpfOk);
 }
 
 // ═══════════════════════════════════════════════
