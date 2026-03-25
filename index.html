@@ -2562,11 +2562,21 @@ async function chamarAPI(acao, dados) {
   if (API_URL === 'SUA_URL_APPS_SCRIPT_AQUI') {
     return simularAPI(acao, dados);
   }
-  const params = encodeURIComponent(JSON.stringify({ acao, ...dados }));
-  const url    = `${API_URL}?dados=${params}`;
-  const res    = await fetch(url, { method: 'GET', redirect: 'follow' });
-  if (!res.ok) throw new Error('Erro na API');
-  return res.json();
+  try {
+    const payload = JSON.stringify({ acao, ...dados });
+    const params  = encodeURIComponent(payload);
+    const url     = `${API_URL}?dados=${params}`;
+    const res     = await fetch(url, {
+      method:   'GET',
+      redirect: 'follow',
+      mode:     'cors',
+    });
+    const text = await res.text();
+    return JSON.parse(text);
+  } catch(e) {
+    console.error('chamarAPI erro:', e);
+    throw e;
+  }
 }
 
 // Simulação para desenvolvimento
@@ -2607,7 +2617,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;">
-  Essa Vaga É Minha — v2 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v3 · Adriano Aquino Advocacia
 </div>
 
 </body>
