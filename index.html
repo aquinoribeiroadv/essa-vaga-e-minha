@@ -1342,7 +1342,7 @@ body::before {
 // ========================================
 // CONFIGURAÇÃO — Substitua pela URL do Apps Script
 // ========================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbyLD6z7DH4rsKJ3FGenn34BLIqBfKSQ2X2pNla6w7XSICh7AxTW6bS_0T8wStqFql7z/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbw-UsazPQKg2yMOXfaBIjOXdrjtGqDaGY62AeI6LmYJj2sBBhadagf1bYAoo6BdEYUx/exec';
 
 // ========================================
 // STATE
@@ -2564,12 +2564,10 @@ async function chamarAPI(acao, dados) {
   }
   try {
     const payload = JSON.stringify({ acao, ...dados });
-    const params  = encodeURIComponent(payload);
-    const url     = `${API_URL}?dados=${params}`;
-    const res     = await fetch(url, {
-      method:   'GET',
+    const res = await fetch(API_URL, {
+      method:   'POST',
       redirect: 'follow',
-      mode:     'cors',
+      body:     payload,
     });
     const text = await res.text();
     return JSON.parse(text);
@@ -2617,7 +2615,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;">
-  Essa Vaga É Minha — v3 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v5 · Adriano Aquino Advocacia
 </div>
 
 </body>
