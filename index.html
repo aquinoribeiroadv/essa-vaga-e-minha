@@ -2430,7 +2430,7 @@ function verificarE1a() {
   const ok = nome.length >= 5 && tel.length === 11 && sexo && ec &&
              numDoc && orgaoE &&
              cep.length === 8 && rua && num && bairro && cidade && uf;
-  document.getElementB═'btn-e1a-avancar').disabled = !ok;
+  document.getElementById('btn-e1a-avancar').disabled = !ok;
 }
 
 function avancarE1b() {
