@@ -2440,10 +2440,11 @@ function avancarE1b() {
   const orgaoE = document.getElementById('e1-orgaoExp').value.trim();
   if (nome.length < 5) { document.getElementById('e1-nome-erro').classList.add('visivel'); return; }
   if (tel.length !== 11) { document.getElementById('e1-tel-erro').classList.add('visivel'); return; }
-  if (!numDoc) { toast('⚠️ Informe o número do documento.'); return; }
-  if (!orgaoE) { toast('⚠️ Informe o órgão expedidor.'); return; }
+  if (!numDoc) { toast('Informe o numero do documento.'); return; }
+  if (!orgaoE) { toast('Informe o orgao expedidor.'); return; }
   document.getElementById('e1-nome-erro').classList.remove('visivel');
   document.getElementById('e1-tel-erro').classList.remove('visivel');
+  popularClassificacao();
   mostrarTela('tela-etapa1b');
   verificarE1b();
 }
@@ -2542,17 +2543,17 @@ async function salvarEtapa1() {
 function voltarInicio() {
   mostrarTela('tela-inicio');
 
-// Popular lista de classificação sem document.write
-(function() {
+// Popular lista de classificação
+function popularClassificacao() {
   const sel = document.getElementById('e1-classificacao');
-  if (!sel) return;
+  if (!sel || sel.options.length > 1) return;
   for (let i = 1; i <= 500; i++) {
     const opt = document.createElement('option');
     opt.value = i;
     opt.textContent = i + 'º lugar';
     sel.appendChild(opt);
   }
-})();
+}
 }
 
 // ========================================
@@ -2615,7 +2616,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;">
-  Essa Vaga É Minha — v5 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v6 · Adriano Aquino Advocacia
 </div>
 
 </body>
