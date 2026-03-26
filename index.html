@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Essa Vaga É Minha — Adriano Aquino</title>
 <meta name="description" content="Cadastro para ação judicial de nomeação em concurso público — Adriano Aquino Advocacia">
 <meta name="theme-color" content="#0a1628">
@@ -571,7 +574,7 @@ function abrirDebug() {
         <div class="campo-erro" id="cpf-erro">CPF inválido. Verifique e tente novamente.</div>
       </div>
 
-      <button class="btn btn-primario" id="btn-continuar" onclick="iniciarAcesso()" disabled>
+      <button class="btn btn-primario" id="btn-continuar" onclick="dbg('Botao clicado'); if(typeof iniciarAcesso==='function'){iniciarAcesso();}else{dbg('ERRO: iniciarAcesso nao definida','erro');}" disabled>
         Continuar →
       </button>
     </div>
@@ -1407,21 +1410,8 @@ function abrirDebug() {
 </div>
 
 <script>
-// ========================================
-// DEBUG PANEL — remover quando estável
-// ========================================
-const DEBUG = true;
-function dbg(msg, tipo) {
-  if (!DEBUG) return;
-  const box = document.getElementById('debug-box');
-  if (!box) return;
-  const cor = tipo === 'erro' ? '#e05252' : tipo === 'ok' ? '#4caf82' : '#e8c97a';
-  const linha = document.createElement('div');
-  linha.style.cssText = 'font-size:0.7rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:' + cor;
-  linha.textContent = new Date().toLocaleTimeString('pt-BR') + ' — ' + msg;
-  box.insertBefore(linha, box.firstChild);
-  console.log('[DBG]', msg);
-}
+// Script principal
+dbg('Script principal iniciando...', 'ok');
 
 // ========================================
 // CONFIGURAÇÃO
