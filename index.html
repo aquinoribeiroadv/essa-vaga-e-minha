@@ -2577,7 +2577,11 @@ async function salvarEtapa1() {
 // ========================================
 function voltarInicio() {
   mostrarTela('tela-inicio');
-  dbg('Sistema iniciado - v11', 'ok');
+}
+
+// Init
+mostrarTela('tela-inicio');
+dbg('Sistema iniciado - v13', 'ok');
 
 // Garantir que botao de avancar funciona
 document.addEventListener('DOMContentLoaded', function() {
@@ -2588,9 +2592,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Popular lista de classificação
-}
-}
+
 
 // ========================================
 // CHAMADA API (Apps Script)
