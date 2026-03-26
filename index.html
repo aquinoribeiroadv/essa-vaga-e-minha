@@ -2345,8 +2345,14 @@ function renderizarEtapa3() {
       <div class="doc-upload-item ${env ? 'enviado' : 'pendente-obrig'}">
         <div class="doc-nome">${doc.nome}</div>
         <div class="doc-desc">${doc.desc}</div>
-        <div class="doc-status ${env ? 'ok' : 'pend'}">
-          ${env ? `✅ ${env.nome}` : '⏳ Pendente'}
+        <div class="doc-status ${env ? (env.status === 'enviando' ? 'pend' : env.status === 'erro' ? 'erro' : 'ok') : 'pend'}">
+          ${env
+            ? env.status === 'enviando'
+              ? '<span class="spinner"></span> Enviando...'
+              : env.status === 'erro'
+                ? '⚠️ Erro — toque para reenviar'
+                : '✅ ' + env.nome
+            : '⏳ Pendente'}
         </div>
         <label class="btn-upload" for="upload-${doc.id}">
           ${env ? '🔄 Substituir' : '📎 Selecionar arquivo'}
@@ -2368,24 +2374,81 @@ function lerArquivoBase64(file) {
   });
 }
 
-function receberArquivo(docId, input) {
+// IDs que pertencem ao Doc 06b
+function ehDoc06b(docId) {
+  return docId === 'doc-trabalho' ||
+         docId.startsWith('renda-') ||
+         docId.startsWith('despesa-') ||
+         docId.startsWith('ir-');
+}
+
+// Nome padronizado para envio ao Drive
+function nomeArquivoPadronizado(docId, nomeOriginal) {
+  if (docId === 'doc01') return 'Doc 01 - Documento de Identificação.pdf';
+  if (docId === 'doc02') return 'Doc 02 - Comprovante de Residência.pdf';
+  if (ehDoc06b(docId))   return 'Doc 06b - ' + nomeOriginal;
+  return nomeOriginal.endsWith('.pdf') ? nomeOriginal : nomeOriginal + '.pdf';
+}
+
+async function receberArquivo(docId, input) {
   const file = input.files[0];
   if (!file) return;
   if (file.size > 9 * 1024 * 1024) { toast('Arquivo muito grande. Máximo 9MB.'); return; }
-  docsEnviados[docId] = { nome: file.name, arquivo: file };
-  toast(file.name + ' selecionado!');
+
+  const nomeNaPasta = nomeArquivoPadronizado(docId, file.name);
+
+  // Marcar como enviando
+  docsEnviados[docId] = { nome: file.name, nomePasta: nomeNaPasta, arquivo: file, status: 'enviando' };
+  renderizarEtapa3();
+
+  // Fazer upload imediatamente em background
+  try {
+    const base64 = await lerArquivoBase64(file);
+    await chamarAPI('uploadDoc', {
+      cpf:           estado.cpf,
+      docId,
+      nome:          nomeNaPasta,
+      nomeOriginal:  file.name,
+      conteudoBase64: base64,
+    });
+    docsEnviados[docId].status = 'enviado';
+    toast(nomeNaPasta + ' enviado!');
+  } catch(e) {
+    docsEnviados[docId].status = 'erro';
+    toast('Erro ao enviar ' + file.name + '. Tente novamente.');
+  }
   renderizarEtapa3();
 }
 
 async function concluirEtapa3() {
+  // Verificar se algum ainda está enviando
+  const enviando = Object.values(docsEnviados).filter(d => d.status === 'enviando');
+  if (enviando.length > 0) {
+    toast('Aguarde, ainda há arquivos sendo enviados...');
+    return;
+  }
+
+  // Reenviar os que deram erro
+  const comErro = Object.entries(docsEnviados).filter(([,d]) => d.status === 'erro');
+  for (const [id, doc] of comErro) {
+    try {
+      const base64 = await lerArquivoBase64(doc.arquivo);
+      await chamarAPI('uploadDoc', {
+        cpf: estado.cpf, docId: id,
+        nome: doc.nomePasta, nomeOriginal: doc.nome,
+        conteudoBase64: base64,
+      });
+      docsEnviados[id].status = 'enviado';
+    } catch(e) {
+      toast('Erro ao enviar ' + doc.nome + '. Tente novamente.');
+      return;
+    }
+  }
+
   const btn = document.getElementById('btn-concluir-docs');
-  btn.innerHTML = '<span class="spinner"></span>Enviando arquivos...';
+  btn.innerHTML = '<span class="spinner"></span>Concluindo...';
   btn.disabled = true;
   try {
-    for (const [id, doc] of Object.entries(docsEnviados)) {
-      const base64 = await lerArquivoBase64(doc.arquivo);
-      await chamarAPI('uploadDoc', { cpf: estado.cpf, docId: id, nome: doc.nome, conteudoBase64: base64 });
-    }
     await chamarAPI('salvarEtapa', {
       cpf: estado.cpf, etapa: '3',
       declarouIR,
@@ -2393,12 +2456,12 @@ async function concluirEtapa3() {
     });
     if (!estado.cliente) estado.cliente = { etapas: {} };
     estado.cliente.etapas['3'] = 'concluido';
-    toast('✅ Documentos enviados com sucesso!');
+    toast('Etapa 3 concluída com sucesso!');
     renderizarPainel();
     setTimeout(() => mostrarTela('tela-painel'), 800);
   } catch {
-    toast('⚠️ Erro ao enviar. Tente novamente.');
-    btn.innerHTML = '✅ Concluir envio de documentos →';
+    toast('Erro ao concluir. Tente novamente.');
+    btn.innerHTML = 'Concluir envio de documentos →';
     btn.disabled = false;
   }
 }
@@ -2680,7 +2743,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v15 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v16 · Adriano Aquino Advocacia
 </div>
 
 <!-- BOTÃO DE DEBUG — remover em produção -->
