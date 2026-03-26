@@ -2249,6 +2249,20 @@ function verificarIRCompleto() {
 function confirmarIR() {
   renderizarEtapa3();
   mostrarTela('tela-etapa3');
+
+  // Gerar Doc 06a em background se houver anos sem declarar
+  const naoDeclarou = Object.entries(declarouIR).filter(([,v]) => v === false).map(([a]) => a);
+  if (naoDeclarou.length > 0) {
+    const anosDeclarados = Object.entries(declarouIR)
+      .filter(([,v]) => v === true).map(([a]) => a).join(', ');
+    chamarAPI('salvarEtapa', {
+      cpf: estado.cpf,
+      etapa: '3',
+      declarouIR,
+      docsEnviados: Object.keys(docsEnviados),
+      apenasGerarDoc06a: true,
+    }).catch(e => console.log('Erro gerando doc06a:', e));
+  }
 }
 
 function montarListaDocs() {
@@ -2743,7 +2757,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v16 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v17 · Adriano Aquino Advocacia
 </div>
 
 <!-- BOTÃO DE DEBUG — remover em produção -->
