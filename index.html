@@ -1089,6 +1089,13 @@ function abrirDebug() {
       <div class="campo-erro" id="e1-class-erro">Selecione sua classificação.</div>
     </div>
 
+    <div class="campo">
+      <label>Salário previsto no edital</label>
+      <input type="text" id="e1-salario" placeholder="Ex: R$ 2.500,00"
+        oninput="verificarE1b()" inputmode="decimal" />
+      <div class="campo-erro" id="e1-salario-erro">Informe o salário previsto no edital.</div>
+    </div>
+
     <button class="btn btn-primario" id="btn-e1b-salvar" onclick="salvarEtapa1()" disabled>
       💾 Salvar e Continuar →
     </button>
@@ -2501,13 +2508,14 @@ function verificarE1b() {
   const outros  = document.getElementById('e1-outros-prefeitura').value.trim();
   const cargo   = document.getElementById('e1-cargo').value.trim();
   const classif = document.getElementById('e1-classificacao').value;
+  const salario = document.getElementById('e1-salario').value.trim();
   const prefOk  = pref && (pref !== 'Outros' || outros.length > 2);
-  const ok = numDoc && orgaoE && prefOk && cargo.length >= 2 && classif;
+  const ok = numDoc && orgaoE && prefOk && cargo.length >= 2 && classif && salario.length > 0;
   document.getElementById('btn-e1b-salvar').disabled = !ok;
 }
 
 // Listeners dinâmicos para verificarE1b
-['e1-numDoc','e1-orgaoExp','e1-cargo','e1-outros-prefeitura','e1-classificacao'].forEach(id => {
+['e1-numDoc','e1-orgaoExp','e1-cargo','e1-outros-prefeitura','e1-classificacao','e1-salario'].forEach(id => {
   setTimeout(() => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', verificarE1b);
@@ -2548,6 +2556,7 @@ async function salvarEtapa1() {
     concurso,
     cargo:        document.getElementById('e1-cargo').value.trim(),
     classificacao:document.getElementById('e1-classificacao').value,
+    salario:      document.getElementById('e1-salario').value.trim(),
     etapa:        '1',
   };
 
@@ -2654,7 +2663,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v12 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v14 · Adriano Aquino Advocacia
 </div>
 
 <!-- BOTÃO DE DEBUG — remover em produção -->
