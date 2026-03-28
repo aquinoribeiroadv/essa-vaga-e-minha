@@ -1,0 +1,2795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Essa Vaga É Minha — Adriano Aquino</title>
+<meta name="description" content="Cadastro para ação judicial de nomeação em concurso público — Adriano Aquino Advocacia">
+<meta name="theme-color" content="#0a1628">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:     #0a1628;
+  --azul-med: #112240;
+  --dourado:  #c9a84c;
+  --dourado-l:#e8c97a;
+  --branco:   #f8f6f1;
+  --cinza:    #8892a4;
+  --borda:    rgba(201,168,76,0.25);
+  --erro:     #e05252;
+  --ok:       #4caf82;
+  --radius:   14px;
+  --sombra:   0 8px 32px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-x: hidden; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--azul);
+  color: var(--branco);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── FUNDO DECORATIVO ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 100% 40% at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { position: relative; z-index: 1; display: flex; flex-direction: column; }
+
+.tela { display: none; flex-direction: column; }
+
+/* ── HEADER ── */
+.header {
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--borda);
+}
+.logo-area { display: flex; flex-direction: column; gap: 2px; }
+.logo-titulo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--dourado);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.logo-sub {
+  font-size: 0.65rem;
+  color: var(--cinza);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.logo-escritorio {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--dourado-l);
+  opacity: 0.7;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── TELA ── */
+.tela { display: none; flex: 1; flex-direction: column; }
+.tela.ativa { display: flex; }
+
+/* ── CARD CENTRAL ── */
+.card-central {
+  margin: 24px 16px;
+  background: var(--azul-med);
+  border: 1px solid var(--borda);
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: var(--sombra);
+  animation: surgir 0.4s ease both;
+}
+@keyframes surgir {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-icon {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--dourado), var(--dourado-l));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+}
+.card-titulo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.45rem;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  color: var(--branco);
+}
+.card-sub {
+  font-size: 0.85rem;
+  color: var(--cinza);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* ── LGPD ── */
+.lgpd-box {
+  background: rgba(201,168,76,0.06);
+  border: 1px solid var(--borda);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 24px;
+  font-size: 0.78rem;
+  color: #aab4c4;
+  line-height: 1.7;
+}
+.lgpd-box strong { color: var(--branco); }
+.lgpd-box .lgpd-titulo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dourado);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.aceite-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+.aceite-check {
+  width: 22px; height: 22px;
+  min-width: 22px;
+  border: 2px solid var(--dourado);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  margin-top: 1px;
+}
+.aceite-check.marcado {
+  background: var(--dourado);
+  color: var(--azul);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.aceite-texto { font-size: 0.8rem; color: var(--cinza); line-height: 1.5; }
+
+/* ── INPUTS ── */
+.campo { margin-bottom: 18px; }
+.campo label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--dourado);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 7px;
+}
+.campo input, .campo select {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-size: 0.95rem;
+  color: var(--branco);
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+.campo input:focus, .campo select:focus {
+  outline: none;
+  border-color: var(--dourado);
+}
+.campo input::placeholder { color: rgba(136,146,164,0.6); }
+.campo input.erro { border-color: var(--erro); }
+.campo input.ok   { border-color: var(--ok); }
+.campo select option { background: var(--azul-med); color: var(--branco); }
+.campo-erro {
+  font-size: 0.72rem;
+  color: var(--erro);
+  margin-top: 5px;
+  display: none;
+}
+.campo-erro.visivel { display: block; }
+
+/* ── BOTÕES ── */
+.btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.btn-primario {
+  background: linear-gradient(135deg, var(--dourado), var(--dourado-l));
+  color: var(--azul);
+}
+.btn-primario:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primario:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-secundario {
+  background: transparent;
+  border: 1.5px solid var(--borda);
+  color: var(--cinza);
+  margin-top: 10px;
+}
+.btn-secundario:hover { border-color: var(--dourado); color: var(--dourado); }
+
+/* ── SENHA CÓDIGO ── */
+.codigo-box {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 24px 0;
+}
+.codigo-box input {
+  width: 44px; height: 54px;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--branco);
+  font-family: 'Syne', sans-serif;
+  -webkit-appearance: none;
+  transition: border-color 0.2s;
+}
+.codigo-box input:focus {
+  outline: none;
+  border-color: var(--dourado);
+  background: rgba(201,168,76,0.08);
+}
+
+/* ── PROGRESSO ── */
+.progresso-bar {
+  margin: 0 16px 0;
+  padding: 16px 0 0;
+}
+.prog-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px 8px 8px;
+}
+.prog-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  min-width: 60px;
+}
+.prog-step::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 55%;
+  right: -45%;
+  height: 2px;
+  background: rgba(255,255,255,0.1);
+  z-index: 0;
+}
+.prog-step:last-child::before { display: none; }
+.prog-step.feito::before { background: var(--dourado); }
+.prog-bolinha {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: var(--azul-med);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--cinza);
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+.prog-step.ativa .prog-bolinha {
+  border-color: var(--dourado);
+  background: var(--dourado);
+  color: var(--azul);
+  box-shadow: 0 0 16px rgba(201,168,76,0.4);
+}
+.prog-step.feito .prog-bolinha {
+  border-color: var(--dourado);
+  background: var(--dourado);
+  color: var(--azul);
+}
+.prog-label {
+  font-size: 0.62rem;
+  color: var(--cinza);
+  margin-top: 6px;
+  text-align: center;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.prog-step.ativa .prog-label { color: var(--dourado); }
+
+/* ── ALERTA / TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--azul-med);
+  border: 1px solid var(--borda);
+  color: var(--branco);
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+  box-shadow: var(--sombra);
+  pointer-events: none;
+}
+.toast.visivel { opacity: 1; }
+
+/* ── INFO BOX ── */
+.info-box {
+  background: rgba(76,175,130,0.08);
+  border: 1px solid rgba(76,175,130,0.25);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 0.8rem;
+  color: #a8d5be;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.info-box.aviso {
+  background: rgba(201,168,76,0.08);
+  border-color: var(--borda);
+  color: #d4b96a;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 20px 0;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+.divider span { font-size: 0.72rem; color: var(--cinza); }
+
+/* ── SPINNER ── */
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(10,22,40,0.3);
+  border-top-color: var(--azul);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── CPF FORMATADO ── */
+.cpf-display {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dourado);
+  text-align: center;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+/* ── CHECKLIST ── */
+.checklist { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.check-icone {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.check-icone.pendente { background: rgba(136,146,164,0.15); color: var(--cinza); }
+.check-icone.concluido { background: rgba(76,175,130,0.15); color: var(--ok); }
+.check-icone.bloqueado { background: rgba(136,146,164,0.08); color: rgba(136,146,164,0.4); }
+.check-info { flex: 1; }
+.check-nome { font-size: 0.82rem; font-weight: 600; color: var(--branco); }
+.check-status { font-size: 0.68rem; color: var(--cinza); margin-top: 2px; }
+.check-item.concluido .check-nome { color: var(--ok); }
+.check-item.bloqueado { opacity: 0.5; }
+
+/* ── OPÇÕES IR ── */
+.btn-opcao-ir {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  color: var(--branco);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-opcao-ir:hover {
+  border-color: var(--dourado);
+  background: rgba(201,168,76,0.08);
+  color: var(--dourado-l);
+}
+
+/* ── UPLOAD DOCS ── */
+.doc-upload-item {
+  background: rgba(255,255,255,0.03);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.doc-upload-item.enviado {
+  border-color: rgba(76,175,130,0.4);
+  background: rgba(76,175,130,0.04);
+}
+.doc-upload-item.pendente-obrig {
+  border-color: rgba(201,168,76,0.3);
+}
+.doc-num {
+  font-size:0.62rem;font-weight:700;color:var(--dourado);
+  text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;
+}
+.doc-nome {
+  font-size:0.88rem;font-weight:600;color:var(--branco);margin-bottom:4px;
+}
+.doc-desc { font-size:0.75rem;color:var(--cinza);margin-bottom:10px; }
+.doc-status {
+  font-size:0.75rem;font-weight:600;
+  display:flex;align-items:center;gap:6px;margin-bottom:10px;
+}
+.doc-status.ok { color:var(--ok); }
+.doc-status.pend { color:var(--cinza); }
+.btn-upload {
+  display:inline-block;background:rgba(201,168,76,0.12);
+  border:1px solid var(--borda);color:var(--dourado);
+  border-radius:8px;padding:8px 14px;font-size:0.78rem;
+  font-weight:700;cursor:pointer;transition:all 0.2s;
+}
+.btn-upload:hover { background:rgba(201,168,76,0.2); }
+@media (min-width: 600px) {
+  .card-central { max-width: 480px; margin: 32px auto; }
+  .progresso-bar { max-width: 480px; margin: 0 auto; }
+  .header { max-width: 480px; margin: 0 auto; padding: 24px 0 16px; }
+  .app { align-items: stretch; }
+}
+</style>
+
+<!-- FUNÇÕES CRÍTICAS em script separado — garantem disponibilidade antes do HTML -->
+<script>
+var DEBUG_ATIVO = true;
+
+function dbg(msg, tipo) {
+  if (!DEBUG_ATIVO) return;
+  try {
+    var box = document.getElementById('debug-box');
+    if (!box) return;
+    var cor = tipo === 'erro' ? '#e05252' : tipo === 'ok' ? '#4caf82' : '#e8c97a';
+    var linha = document.createElement('div');
+    linha.style.cssText = 'font-size:0.7rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:' + cor;
+    linha.textContent = new Date().toLocaleTimeString('pt-BR') + ' — ' + msg;
+    box.insertBefore(linha, box.firstChild);
+  } catch(e) {}
+  console.log('[DBG]', msg);
+}
+
+function abrirDebug() {
+  var p = document.getElementById('debug-panel');
+  if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+// Wrapper para iniciarAcesso — garante que existe mesmo se script principal falhar
+function iniciarAcesso() {
+  dbg('iniciarAcesso chamada', 'ok');
+  // Aguardar até que a função real esteja disponível
+  if (window._iniciarAcessoReal) {
+    window._iniciarAcessoReal();
+  } else {
+    dbg('ERRO: script principal nao carregou', 'erro');
+  }
+}
+</script>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-area">
+      <div class="logo-titulo">⚖️ Essa Vaga É Minha</div>
+      <div class="logo-sub">Ação judicial de nomeação</div>
+    </div>
+    <div class="logo-escritorio">Adriano Aquino</div>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       TELA 1 — LGPD + CPF
+  ══════════════════════════════════════ -->
+  <div class="tela ativa" id="tela-inicio">
+    <div class="card-central">
+      <div class="card-icon">⚖️</div>
+      <div class="card-titulo">Bem-vindo ao seu processo</div>
+      <div class="card-sub">Vamos garantir a sua vaga. Preencha o formulário em poucos minutos e cuide do resto.</div>
+
+      <!-- LGPD -->
+      <div class="lgpd-box">
+        <span class="lgpd-titulo">📋 Aviso de Privacidade e Proteção de Dados</span>
+        Em conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — LGPD)</strong>, informamos que os dados pessoais coletados neste formulário serão utilizados <strong>exclusivamente</strong> para a elaboração dos documentos necessários ao ajuizamento de ação judicial perante o Tribunal de Justiça da Paraíba (TJPB), por meio do sistema PJe.<br><br>
+        Seus dados <strong>não serão compartilhados com terceiros</strong> para qualquer outra finalidade.<br><br>
+        <strong>Controlador e Encarregado de Dados Pessoais:</strong><br>
+        Adriano Aquino Ribeiro — aquinoribeiroadv&#64;gmail.com
+      </div>
+
+      <!-- ACEITE -->
+      <div class="aceite-row" id="aceite-row" style="cursor:pointer;">
+        <div class="aceite-check" id="aceite-check" onclick="toggleAceite(); event.stopPropagation();"></div>
+        <div class="aceite-texto" onclick="toggleAceite()">Li e concordo com o uso dos meus dados conforme o Aviso de Privacidade acima.</div>
+      </div>
+
+      <!-- CPF -->
+      <div class="campo">
+        <label>CPF</label>
+        <input type="tel" id="cpf-input" placeholder="000.000.000-00"
+          maxlength="14" oninput="formatarCPF(this)" onkeyup="formatarCPF(this)" inputmode="numeric" autocomplete="off" />
+        <div class="campo-erro" id="cpf-erro">CPF inválido. Verifique e tente novamente.</div>
+      </div>
+
+      <button class="btn btn-primario" id="btn-continuar" onclick="dbg('Botao clicado'); if(typeof iniciarAcesso==='function'){iniciarAcesso();}else{dbg('ERRO: iniciarAcesso nao definida','erro');}" disabled>
+        Continuar →
+      </button>
+    </div>
+  </div>
+
+  <!-- Script ISOLADO para tela de início — carrega antes do script principal -->
+  <script>
+  function validarCPFNum(cpf) {
+    var n = cpf.replace(/\D/g,'');
+    if (n.length !== 11 || /^(\d)\1+$/.test(n)) return false;
+    var s = 0, r, i;
+    for (i = 0; i < 9; i++) s += parseInt(n[i]) * (10 - i);
+    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+    if (r !== parseInt(n[9])) return false;
+    s = 0;
+    for (i = 0; i < 10; i++) s += parseInt(n[i]) * (11 - i);
+    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+    return r === parseInt(n[10]);
+  }
+  function formatarCPF(input) {
+    var v = input.value.replace(/\D/g,'').substring(0,11);
+    if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');
+    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');
+    else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/,'$1.$2');
+    input.value = v;
+    var aceito = document.getElementById('aceite-check').classList.contains('marcado');
+    var cpfOk  = validarCPFNum(v);
+    document.getElementById('btn-continuar').disabled = !(aceito && cpfOk);
+    var erro = document.getElementById('cpf-erro');
+    erro.classList.remove('visivel');
+    input.classList.remove('erro','ok');
+    if (v.replace(/\D/g,'').length === 11) {
+      if (cpfOk) input.classList.add('ok');
+      else { input.classList.add('erro'); erro.classList.add('visivel'); }
+    }
+  }
+  function toggleAceite() {
+    var chk    = document.getElementById('aceite-check');
+    var marcado = chk.classList.toggle('marcado');
+    chk.textContent      = marcado ? '✓' : '';
+    chk.style.background = marcado ? '#c9a84c' : 'transparent';
+    chk.style.color      = marcado ? '#0a1628' : '';
+    var cpfOk = validarCPFNum(document.getElementById('cpf-input').value);
+    document.getElementById('btn-continuar').disabled = !(marcado && cpfOk);
+  }
+  </script>
+
+  <!-- ══════════════════════════════════════
+       TELA 2A — NOVO CLIENTE: EMAIL
+  ══════════════════════════════════════ -->
+  <div class="tela" id="tela-novo-email">
+    <div class="card-central">
+      <div class="card-icon">✉️</div>
+      <div class="card-titulo" id="titulo-novo-email">Primeiro acesso</div>
+      <div class="card-sub" id="sub-novo-email">Nao encontramos seu CPF em nosso sistema. Informe seu email para receber sua senha de acesso.</div>
+
+      <div class="cpf-display" id="cpf-display-novo"></div>
+
+      <div class="campo">
+        <label>Email</label>
+        <input type="email" id="email-novo" placeholder="seuemail@exemplo.com"
+          oninput="validarEmail(this)" inputmode="email" autocomplete="email" />
+        <div class="campo-erro" id="email-novo-erro">Email invalido.</div>
+      </div>
+
+      <div class="info-box aviso" id="info-novo-email">
+        Voce recebera uma senha de 6 digitos neste email para acessar e continuar seu cadastro quando quiser.
+      </div>
+
+      <button class="btn btn-primario" id="btn-enviar-senha" onclick="enviarSenhaNovo()" disabled>
+        Enviar senha por email →
+      </button>
+      <button class="btn btn-secundario" onclick="voltarInicio()">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TELA 2B — CLIENTE EXISTENTE: SENHA
+  ══════════════════════════════════════ -->
+  <div class="tela" id="tela-existente-senha">
+    <div class="card-central">
+      <div class="card-icon">🔐</div>
+      <div class="card-titulo">Bem-vindo de volta!</div>
+      <div class="card-sub" id="msg-bem-vindo">Digite a senha de 6 dígitos enviada para o seu email.</div>
+
+      <div class="cpf-display" id="cpf-display-existente"></div>
+
+      <div class="codigo-box" id="codigo-box">
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod" oninput="moveFoco(this,0)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod" oninput="moveFoco(this,1)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod" oninput="moveFoco(this,2)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod" oninput="moveFoco(this,3)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod" oninput="moveFoco(this,4)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod" oninput="moveFoco(this,5)" />
+      </div>
+
+      <!-- MODO DESENVOLVIMENTO: mostrar código na tela -->
+      <div id="dev-codigo-exist" class="info-box aviso" style="text-align:center;display:none;">
+        🛠️ <strong>Modo teste</strong> — Seu código é: <strong id="dev-codigo-exist-valor" style="font-size:1.2rem;letter-spacing:0.2em;color:var(--dourado-l);"></strong>
+      </div>
+
+      <button class="btn btn-primario" id="btn-verificar" onclick="verificarSenha()" disabled>
+        Acessar meu cadastro →
+      </button>
+      <button class="btn btn-secundario" onclick="reenviarSenha()">Reenviar senha</button>
+      <button class="btn btn-secundario" onclick="abrirEsqueciSenha()" style="color:var(--dourado);border-color:var(--borda);">Esqueci minha senha</button>
+      <button class="btn btn-secundario" onclick="voltarInicio()">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TELA — ESQUECI A SENHA
+  ══════════════════════════════════════ -->
+  <div class="tela" id="tela-esqueci-senha">
+    <div class="card-central">
+      <div class="card-icon">🔑</div>
+      <div class="card-titulo">Esqueci minha senha</div>
+      <div class="card-sub">Informe o email cadastrado junto com este CPF. Se corresponder, reenviaremos sua senha.</div>
+
+      <div class="cpf-display" id="cpf-display-esqueci"></div>
+
+      <div class="campo">
+        <label>Email cadastrado</label>
+        <input type="email" id="email-esqueci" placeholder="seuemail@exemplo.com"
+          oninput="validarEmailEsqueci(this)" inputmode="email" autocomplete="email" />
+        <div class="campo-erro" id="email-esqueci-erro">Email inválido.</div>
+      </div>
+
+      <button class="btn btn-primario" id="btn-confirmar-esqueci" onclick="confirmarEsqueci()" disabled>
+        Reenviar minha senha →
+      </button>
+      <button class="btn btn-secundario" onclick="mostrarTela('tela-existente-senha')">← Voltar</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TELA 3 — CONFIRMAR SENHA (NOVO)
+  ══════════════════════════════════════ -->
+  <div class="tela" id="tela-confirmar-senha">
+    <div class="card-central">
+      <div class="card-icon">📨</div>
+      <div class="card-titulo">Verifique seu email</div>
+      <div class="card-sub" id="msg-confirmar">Enviamos uma senha de 6 dígitos para <strong id="email-enviado"></strong>. Digite-a abaixo para começar.</div>
+
+      <div class="codigo-box" id="codigo-box-novo">
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod-novo" oninput="moveFocoNovo(this,0)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod-novo" oninput="moveFocoNovo(this,1)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod-novo" oninput="moveFocoNovo(this,2)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod-novo" oninput="moveFocoNovo(this,3)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod-novo" oninput="moveFocoNovo(this,4)" />
+        <input type="tel" maxlength="1" inputmode="numeric" class="cod-novo" oninput="moveFocoNovo(this,5)" />
+      </div>
+
+      <!-- MODO DESENVOLVIMENTO: mostrar código na tela -->
+      <div id="dev-codigo-novo" class="info-box aviso" style="text-align:center;display:none;">
+        🛠️ <strong>Modo teste</strong> — Seu código é: <strong id="dev-codigo-novo-valor" style="font-size:1.2rem;letter-spacing:0.2em;color:var(--dourado-l);"></strong>
+      </div>
+
+      <button class="btn btn-primario" id="btn-verificar-novo" onclick="verificarSenhaNovo()" disabled>
+        Confirmar e iniciar →
+      </button>
+      <button class="btn btn-secundario" onclick="reenviarSenhaNovo()">Reenviar senha</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TELA 4 — PAINEL DO CLIENTE
+  ══════════════════════════════════════ -->
+  <div class="tela" id="tela-painel">
+
+    <!-- BARRA DE PROGRESSO -->
+    <div class="progresso-bar">
+      <div class="prog-steps">
+        <div class="prog-step" id="prog-1">
+          <div class="prog-bolinha">1</div>
+          <div class="prog-label">Dados</div>
+        </div>
+        <div class="prog-step" id="prog-2">
+          <div class="prog-bolinha">2</div>
+          <div class="prog-label">Financeiro</div>
+        </div>
+        <div class="prog-step" id="prog-3">
+          <div class="prog-bolinha">3</div>
+          <div class="prog-label">Documentos</div>
+        </div>
+        <div class="prog-step" id="prog-4">
+          <div class="prog-bolinha">4</div>
+          <div class="prog-label">Assinatura</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-central">
+      <div class="card-titulo" id="painel-nome-boas-vindas">Olá! 👋</div>
+      <div class="card-sub">Acompanhe o andamento do seu cadastro abaixo.</div>
+
+      <div class="checklist">
+        <div class="check-item" id="chk-1" onclick="irParaEtapa(1)">
+          <div class="check-icone pendente" id="chk-1-icone">1</div>
+          <div class="check-info">
+            <div class="check-nome">Dados pessoais e do concurso</div>
+            <div class="check-status" id="chk-1-status">Pendente</div>
+          </div>
+          <div style="color:var(--cinza);font-size:1rem;">›</div>
+        </div>
+        <div class="check-item bloqueado" id="chk-2">
+          <div class="check-icone bloqueado" id="chk-2-icone">2</div>
+          <div class="check-info">
+            <div class="check-nome">Dados financeiros</div>
+            <div class="check-status" id="chk-2-status">Aguardando etapa anterior</div>
+          </div>
+        </div>
+        <div class="check-item bloqueado" id="chk-3">
+          <div class="check-icone bloqueado" id="chk-3-icone">3</div>
+          <div class="check-info">
+            <div class="check-nome">Documentos</div>
+            <div class="check-status" id="chk-3-status">Aguardando etapas anteriores</div>
+          </div>
+        </div>
+        <div class="check-item bloqueado" id="chk-4" onclick="irParaEtapa(4)">
+          <div class="check-icone bloqueado" id="chk-4-icone">4</div>
+          <div class="check-info">
+            <div class="check-nome">Envio dos Documentos Assinados</div>
+            <div class="check-status" id="chk-4-status">Aguardando etapas anteriores</div>
+          </div>
+        </div>      </div>
+
+      <button class="btn btn-primario" id="btn-continuar-etapa" onclick="continuarEtapa()">
+        Iniciar etapa 1 →
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     TELA 5 — ETAPA 1A: DADOS PESSOAIS
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa1a">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step ativa" id="prog-1a-1"><div class="prog-bolinha">1</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step" id="prog-1a-2"><div class="prog-bolinha">2</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step" id="prog-1a-3"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step" id="prog-1a-4"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">👤</div>
+    <div class="card-titulo">Dados Pessoais</div>
+    <div class="card-sub">Bloco 1 de 2 — Informações pessoais e endereço</div>
+
+    <div class="campo">
+      <label>Nome completo</label>
+      <input type="text" id="e1-nome" placeholder="Como consta no documento de identidade"
+        oninput="this.value=this.value.toUpperCase().replace(/^\s+/,'')" autocomplete="name" />
+      <div class="campo-erro" id="e1-nome-erro">Informe seu nome completo.</div>
+    </div>
+
+    <div class="campo">
+      <label>Telefone (WhatsApp)</label>
+      <input type="tel" id="e1-tel" placeholder="(83) 99999-9999"
+        maxlength="15" oninput="formatarTel(this)" inputmode="numeric" />
+      <div class="campo-erro" id="e1-tel-erro">Informe DDD + 9 dígitos.</div>
+    </div>
+
+    <div class="campo">
+      <label>Sexo</label>
+      <select id="e1-sexo" onchange="atualizarEstadoCivil()">
+        <option value="">Selecione...</option>
+        <option value="M">Masculino</option>
+        <option value="F">Feminino</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Estado civil</label>
+      <select id="e1-estadocivil">
+        <option value="">Selecione o sexo primeiro...</option>
+      </select>
+    </div>
+
+    <div class="divider"><span>Documento de identificação</span></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="campo">
+        <label>Tipo</label>
+        <select id="e1-tipoDoc">
+          <option value="RG">RG</option>
+          <option value="CNH">CNH</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Número</label>
+        <input type="text" id="e1-numDoc" placeholder="Nº do documento"
+          oninput="this.value=this.value.replace(/^\s+|\s+$/g,'').toUpperCase();verificarE1a();" />
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Órgão expedidor</label>
+      <input type="text" id="e1-orgaoExp" placeholder="Ex: SSP/PB, DETRAN/PB"
+        oninput="this.value=this.value.toUpperCase().replace(/^\s+/,'');verificarE1a();" />
+    </div>
+
+    <div class="divider"><span>Endereço</span></div>
+
+    <div class="campo">
+      <label>CEP</label>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <input type="tel" id="e1-cep" placeholder="00000-000" maxlength="9"
+          oninput="formatarCEP(this)" inputmode="numeric" style="flex:1;" />
+        <div id="cep-spinner" style="display:none;padding:13px 0;">
+          <div class="spinner" style="border-top-color:var(--dourado);border-color:rgba(201,168,76,0.2);"></div>
+        </div>
+      </div>
+      <div class="campo-erro" id="e1-cep-erro">CEP não encontrado.</div>
+    </div>
+
+    <div id="campos-endereco" style="display:none;">
+      <div class="campo">
+        <label>Rua / Avenida</label>
+        <input type="text" id="e1-rua" placeholder="Nome da rua"
+          oninput="this.value=this.value.replace(/^\s+/,'');verificarE1a();" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="campo">
+          <label>Número</label>
+          <input type="tel" id="e1-numero" placeholder="Ex: 123" inputmode="numeric"
+            oninput="this.value=this.value.replace(/\D/g,'');verificarE1a();" />
+        </div>
+        <div class="campo">
+          <label>Complemento</label>
+          <input type="text" id="e1-complemento" placeholder="Apto, Casa..."
+            oninput="verificarE1a();" />
+        </div>
+      </div>
+      <div class="campo">
+        <label>Bairro</label>
+        <input type="text" id="e1-bairro" placeholder="Bairro"
+          oninput="this.value=this.value.replace(/^\s+/,'');verificarE1a();" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 80px;gap:12px;">
+        <div class="campo">
+          <label>Cidade</label>
+          <input type="text" id="e1-cidade" placeholder="Cidade"
+            oninput="this.value=this.value.replace(/^\s+/,'');verificarE1a();" />
+        </div>
+        <div class="campo">
+          <label>UF</label>
+          <input type="text" id="e1-uf" maxlength="2" placeholder="PB"
+            oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'');verificarE1a();" />
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primario" id="btn-e1a-avancar" onclick="avancarE1b()" disabled>
+      Continuar → Dados do Concurso
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 6 — ETAPA 1B: DADOS DO CONCURSO
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa1b">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step ativa"><div class="prog-bolinha">1</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step"><div class="prog-bolinha">2</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">🏛️</div>
+    <div class="card-titulo">Dados do Concurso</div>
+    <div class="card-sub">Bloco 2 de 2 — Informações do concurso público</div>
+
+    <div class="campo">
+      <label>Órgão / Prefeitura</label>
+      <select id="e1-prefeitura" onchange="verificarOutros()">
+        <option value="">Selecione...</option>
+        <option>Prefeitura Municipal de Água Branca</option>
+        <option>Prefeitura Municipal de Alhandra</option>
+        <option>Prefeitura Municipal de Alagoa Nova</option>
+        <option>Prefeitura Municipal de Araçagi</option>
+        <option>Prefeitura Municipal de Areia</option>
+        <option>Prefeitura Municipal de Araruna</option>
+        <option>Prefeitura Municipal de Barra de Santa Rosa</option>
+        <option>Prefeitura Municipal de Barra de Santana</option>
+        <option>Prefeitura Municipal de Barra de São Miguel</option>
+        <option>Prefeitura Municipal de Bayeux</option>
+        <option>Prefeitura Municipal de Belém</option>
+        <option>Prefeitura Municipal de Bernardino Batista</option>
+        <option>Prefeitura Municipal de Boa Vista</option>
+        <option>Prefeitura Municipal de Bonito de Santa Fé</option>
+        <option>Prefeitura Municipal de Boqueirão</option>
+        <option>Prefeitura Municipal de Brejo do Cruz</option>
+        <option>Prefeitura Municipal de Cabaceiras</option>
+        <option>Prefeitura Municipal de Cabedelo</option>
+        <option>Prefeitura Municipal de Cachoeira dos Índios</option>
+        <option>Prefeitura Municipal de Cacimba de Dentro</option>
+        <option>Prefeitura Municipal de Caiçara</option>
+        <option>Prefeitura Municipal de Campina Grande</option>
+        <option>Prefeitura Municipal de Capim</option>
+        <option>Prefeitura Municipal de Caraúbas</option>
+        <option>Prefeitura Municipal de Catingueira</option>
+        <option>Prefeitura Municipal de Catolé do Rocha</option>
+        <option>Prefeitura Municipal de Caturité</option>
+        <option>Prefeitura Municipal de Congo</option>
+        <option>Prefeitura Municipal de Coremas</option>
+        <option>Prefeitura Municipal de Cubati</option>
+        <option>Prefeitura Municipal de Curral de Cima</option>
+        <option>Prefeitura Municipal de Desterro</option>
+        <option>Prefeitura Municipal de Dona Inês</option>
+        <option>Prefeitura Municipal de Duas Estradas</option>
+        <option>Prefeitura Municipal de Esperança</option>
+        <option>Prefeitura Municipal de Fagundes</option>
+        <option>Prefeitura Municipal de Frei Martinho</option>
+        <option>Prefeitura Municipal de Imaculada</option>
+        <option>Prefeitura Municipal de Itapororoca</option>
+        <option>Prefeitura Municipal de Jacaraú</option>
+        <option>Prefeitura Municipal de João Pessoa</option>
+        <option>Prefeitura Municipal de Junco do Seridó</option>
+        <option>Prefeitura Municipal de Juripiranga</option>
+        <option>Prefeitura Municipal de Lagoa Seca</option>
+        <option>Prefeitura Municipal de Lastro</option>
+        <option>Prefeitura Municipal de Mamanguape</option>
+        <option>Prefeitura Municipal de Manaira</option>
+        <option>Prefeitura Municipal de Mari</option>
+        <option>Prefeitura Municipal de Malta</option>
+        <option>Prefeitura Municipal de Matinhas</option>
+        <option>Prefeitura Municipal de Maturéia</option>
+        <option>Prefeitura Municipal de Mogeiro</option>
+        <option>Prefeitura Municipal de Monteiro</option>
+        <option>Prefeitura Municipal de Nazarezinho</option>
+        <option>Prefeitura Municipal de Nova Palmeira</option>
+        <option>Prefeitura Municipal de Olivêdos</option>
+        <option>Prefeitura Municipal de Ouro Velho</option>
+        <option>Prefeitura Municipal de Passagem</option>
+        <option>Prefeitura Municipal de Paulista</option>
+        <option>Prefeitura Municipal de Pedra Lavrada</option>
+        <option>Prefeitura Municipal de Pedras de Fogo</option>
+        <option>Prefeitura Municipal de Pedro Régis</option>
+        <option>Prefeitura Municipal de Piancó</option>
+        <option>Prefeitura Municipal de Picuí</option>
+        <option>Prefeitura Municipal de Pilões</option>
+        <option>Prefeitura Municipal de Pilõezinhos</option>
+        <option>Prefeitura Municipal de Pitimbu</option>
+        <option>Prefeitura Municipal de Poço Dantas</option>
+        <option>Prefeitura Municipal de Poço de José de Moura</option>
+        <option>Prefeitura Municipal de Pombal</option>
+        <option>Prefeitura Municipal de Princesa Isabel</option>
+        <option>Prefeitura Municipal de Queimadas</option>
+        <option>Prefeitura Municipal de Riacho de Santo Antônio</option>
+        <option>Prefeitura Municipal de Riacho dos Cavalos</option>
+        <option>Prefeitura Municipal de Salgado de São Félix</option>
+        <option>Prefeitura Municipal de Santa Cruz</option>
+        <option>Prefeitura Municipal de Santa Helena</option>
+        <option>Prefeitura Municipal de Santa Rita</option>
+        <option>Prefeitura Municipal de Santa Terezinha</option>
+        <option>Prefeitura Municipal de São Bentinho</option>
+        <option>Prefeitura Municipal de São Bento</option>
+        <option>Prefeitura Municipal de São Domingos do Cariri</option>
+        <option>Prefeitura Municipal de São Francisco</option>
+        <option>Prefeitura Municipal de São João do Tigre</option>
+        <option>Prefeitura Municipal de São João do Rio do Peixe</option>
+        <option>Prefeitura Municipal de São José da Lagoa Tapada</option>
+        <option>Prefeitura Municipal de São José de Piranhas</option>
+        <option>Prefeitura Municipal de São Mamede</option>
+        <option>Prefeitura Municipal de São Miguel de Taipú</option>
+        <option>Prefeitura Municipal de Sertãozinho</option>
+        <option>Prefeitura Municipal de Serra Branca</option>
+        <option>Prefeitura Municipal de Serra da Raiz</option>
+        <option>Prefeitura Municipal de Soledade</option>
+        <option>Prefeitura Municipal de Sousa</option>
+        <option>Prefeitura Municipal de Sumé</option>
+        <option>Prefeitura Municipal de Tacima</option>
+        <option>Prefeitura Municipal de Tavares</option>
+        <option>Prefeitura Municipal de Tenório</option>
+        <option>Prefeitura Municipal de Triunfo</option>
+        <option>Prefeitura Municipal de Várzea</option>
+        <option>Prefeitura Municipal de Vieirópolis</option>
+        <option>Prefeitura Municipal de Vista Serrana</option>
+        <option value="Outros">Outros</option>
+      </select>
+    </div>
+
+    <div class="campo" id="campo-outros-prefeitura" style="display:none;">
+      <label>Qual órgão/prefeitura?</label>
+      <input type="text" id="e1-outros-prefeitura" placeholder="Digite o nome do órgão"
+        oninput="this.value=this.value.replace(/^\s+/,'')" />
+    </div>
+
+    <div class="campo">
+      <label>Cargo concorrido</label>
+      <input type="text" id="e1-cargo" placeholder="Ex: ASSISTENTE SOCIAL"
+        oninput="this.value=this.value.toUpperCase().replace(/^\s+/,'')" />
+      <div class="campo-erro" id="e1-cargo-erro">Informe o cargo.</div>
+    </div>
+
+    <div class="campo">
+      <label>Classificação no resultado final</label>
+      <select id="e1-classificacao">
+        <option value="">Selecione sua colocação...</option>
+      </select>
+      <div class="campo-erro" id="e1-class-erro">Selecione sua classificação.</div>
+    </div>
+
+    <div class="campo">
+      <label>Salário previsto no edital</label>
+      <input type="text" id="e1-salario" placeholder="Ex: R$ 2.500,00"
+        oninput="formatarMoedaInput(this); verificarE1b();" inputmode="decimal" />
+      <div class="campo-erro" id="e1-salario-erro">Informe o salário previsto no edital.</div>
+    </div>
+
+    <button class="btn btn-primario" id="btn-e1b-salvar" onclick="salvarEtapa1()" disabled>
+      💾 Salvar e Continuar →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-etapa1a')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 7 — ETAPA 2: JUSTIÇA GRATUITA
+══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     TELA 7 — ETAPA 2: SITUAÇÃO DE TRABALHO
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa2-trabalho">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">2</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">💼</div>
+    <div class="card-titulo">Situação de Trabalho</div>
+    <div class="card-sub">Selecione sua situação atual de trabalho. Isso determina quais documentos serão necessários.</div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+      <button class="btn-opcao-ir" onclick="selecionarTrabalho('sem_vinculo')">
+        Atualmente sem nenhum vínculo
+      </button>
+      <button class="btn-opcao-ir" onclick="selecionarTrabalho('carteira_assinada')">
+        Atualmente trabalhando com carteira de trabalho assinada
+      </button>
+      <button class="btn-opcao-ir" onclick="selecionarTrabalho('vinculo_publico')">
+        Atualmente trabalhando com vínculo com município, estado ou união
+      </button>
+      <button class="btn-opcao-ir" onclick="selecionarTrabalho('sem_vinculo_comprovado')">
+        Atualmente trabalhando sem vínculo comprovado
+      </button>
+      <button class="btn-opcao-ir" onclick="selecionarTrabalho('aposentado')">
+        Aposentado, pensionista ou beneficiário de programa do governo
+      </button>
+    </div>
+
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar ao painel</button>
+  </div>
+</div>
+
+<div class="tela" id="tela-etapa2-jg">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">2</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">⚖️</div>
+    <div class="card-titulo">Justiça Gratuita</div>
+    <div class="card-sub">Entenda o benefício antes de decidir</div>
+
+    <div class="lgpd-box">
+      <span class="lgpd-titulo">💡 O que é a Justiça Gratuita?</span>
+      A <strong>Justiça Gratuita</strong> é um benefício previsto na Constituição Federal e no Código de Processo Civil que permite ao cidadão litigar judicialmente sem arcar com custas, taxas e emolumentos do processo.<br><br>
+      Ao solicitarmos esse benefício ao Poder Judiciário, pediremos que o juiz <strong>dispense totalmente o pagamento das custas</strong> processuais ou, alternativamente, conceda <strong>desconto ou parcelamento</strong> conforme previsto em lei.<br><br>
+      Para solicitar, você precisará <strong>informar suas rendas e despesas mensais</strong> e enviar documentos comprobatórios. O juiz analisará sua situação econômica e decidirá sobre a concessão do benefício.
+    </div>
+
+    <div class="card-sub" style="margin-bottom:20px;font-weight:600;color:var(--branco);">
+      Deseja solicitar o benefício da Justiça Gratuita?
+    </div>
+
+    <button class="btn btn-primario" onclick="responderJG(true)" style="margin-bottom:12px;">
+      ✅ Sim, desejo solicitar
+    </button>
+    <button class="btn btn-secundario" onclick="responderJG(false)">
+      Não, seguir sem o benefício →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')" style="margin-top:6px;">← Voltar ao painel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 8 — ETAPA 2A: RENDAS
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa2-rendas">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">2</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">💰</div>
+    <div class="card-titulo">Suas Rendas</div>
+    <div class="card-sub">Informe todas as suas fontes de renda mensal. Inclua salário, aposentadoria, aluguel, pensão ou qualquer outro valor que você receba regularmente.</div>
+
+    <div id="lista-rendas"></div>
+
+    <button class="btn btn-secundario" onclick="adicionarRenda()" style="border-style:dashed;color:var(--dourado);border-color:var(--dourado);margin-bottom:20px;">
+      + Adicionar renda
+    </button>
+
+    <div id="total-rendas-box" style="display:none;background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.25);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:0.82rem;color:#a8d5be;">Total de rendas</span>
+      <strong id="total-rendas-valor" style="color:var(--ok);font-family:'Syne',sans-serif;font-size:1rem;"></strong>
+    </div>
+
+    <button class="btn btn-primario" id="btn-ir-despesas" onclick="irParaDespesas()" disabled>
+      Ir para Despesas →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-etapa2-jg')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 9 — ETAPA 2B: DESPESAS
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa2-despesas">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">2</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">📋</div>
+    <div class="card-titulo">Suas Despesas</div>
+    <div class="card-sub">Informe todas as suas despesas mensais — aluguel, financiamento, escola, saúde, alimentação, etc. Inclua mesmo as despesas que não estejam em seu nome.</div>
+
+    <div id="lista-despesas"></div>
+
+    <button class="btn btn-secundario" onclick="adicionarDespesa()" style="border-style:dashed;color:var(--dourado);border-color:var(--dourado);margin-bottom:20px;">
+      + Adicionar despesa
+    </button>
+
+    <div id="total-despesas-box" style="background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.2);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:0.82rem;color:#f0a0a0;">Total de despesas</span>
+      <strong id="total-despesas-valor" style="color:var(--erro);font-family:'Syne',sans-serif;font-size:1rem;">R$ 0,00</strong>
+    </div>
+
+    <button class="btn btn-primario" id="btn-ver-tabela" onclick="verTabela()" disabled>
+      Ver tabela de comprometimento →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-etapa2-rendas')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 10 — TABELA DE COMPROMETIMENTO
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa2-tabela">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">2</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">📊</div>
+    <div class="card-titulo">Comprometimento de Renda</div>
+    <div class="card-sub">Resumo da sua situação financeira mensal</div>
+
+    <!-- TABELA RENDAS -->
+    <div style="font-size:0.7rem;font-weight:700;color:var(--dourado);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Rendas</div>
+    <div id="tabela-rendas-linhas" style="margin-bottom:16px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(76,175,130,0.1);border-radius:8px;padding:10px 12px;margin-bottom:20px;">
+      <span style="font-size:0.82rem;font-weight:600;color:#a8d5be;">Total de Rendas</span>
+      <strong id="tab-total-rendas" style="color:var(--ok);font-family:'Syne',sans-serif;"></strong>
+    </div>
+
+    <!-- TABELA DESPESAS -->
+    <div style="font-size:0.7rem;font-weight:700;color:var(--dourado);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Despesas</div>
+    <div id="tabela-despesas-linhas" style="margin-bottom:16px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(224,82,82,0.1);border-radius:8px;padding:10px 12px;margin-bottom:20px;">
+      <span style="font-size:0.82rem;font-weight:600;color:#f0a0a0;">Total de Despesas</span>
+      <strong id="tab-total-despesas" style="color:var(--erro);font-family:'Syne',sans-serif;"></strong>
+    </div>
+
+    <!-- PERCENTUAL -->
+    <div id="tab-percentual-box" style="border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:24px;">
+      <div style="font-size:0.72rem;color:var(--cinza);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.08em;">Comprometimento da renda</div>
+      <div id="tab-percentual" style="font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:900;"></div>
+      <div id="tab-percentual-label" style="font-size:0.78rem;margin-top:4px;"></div>
+    </div>
+
+    <button class="btn btn-primario" id="btn-salvar-etapa2" onclick="salvarEtapa2()">
+      💾 Confirmar e Salvar →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-etapa2-despesas')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 11 — ETAPA 3: DOCUMENTOS
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa3">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">📁</div>
+    <div class="card-titulo">Documentos</div>
+    <div class="card-sub">Envie cada documento no campo correspondente. Você pode continuar depois — seu progresso é salvo.</div>
+
+    <div class="lgpd-box" style="margin-bottom:16px;padding:12px 14px;">
+      📄 <strong>Atenção:</strong> Todos os arquivos devem estar no formato <strong>PDF</strong>. Outros formatos não serão aceitos.
+    </div>
+
+    <div id="lista-docs-etapa3"></div>
+
+    <button class="btn btn-primario" id="btn-concluir-docs" onclick="concluirEtapa3()" disabled style="margin-top:8px;">
+      ✅ Concluir envio de documentos →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar ao painel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 12 — PERGUNTA IR POR ANO
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa3-ir">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">3</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">🧾</div>
+    <div class="card-titulo">Imposto de Renda</div>
+    <div class="card-sub">Informe em quais anos você apresentou declaração de IR. Para os anos não declarados, elaboraremos uma Declaração de Isenção para você assinar.</div>
+
+    <div class="info-box aviso" style="margin-bottom:20px;">
+      💡 Responda separadamente para cada ano.
+    </div>
+
+    <div id="ir-perguntas" style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px;"></div>
+
+    <button class="btn btn-primario" id="btn-confirmar-ir" onclick="confirmarIR()">
+      Confirmar e ver documentos →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-etapa3')">← Voltar</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 13 — ETAPA 4: ASSINATURA
+══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     TELA — CONFIRMAÇÃO ETAPA 3
+══════════════════════════════════════ -->
+<div class="tela" id="tela-confirmacao-etapa3">
+  <div class="card-central" style="margin-top:24px;text-align:center;">
+    <div style="font-size:3.5rem;margin-bottom:16px;">📬</div>
+    <div class="card-titulo" style="text-align:center;">Documentos Recebidos!</div>
+    <div class="card-sub" style="text-align:center;margin-bottom:24px;">
+      Todos os seus documentos foram enviados com sucesso e estão sendo processados pelo escritório.
+    </div>
+    <div class="lgpd-box" style="text-align:left;margin-bottom:24px;">
+      <strong style="color:var(--dourado);">O que acontece agora?</strong><br><br>
+      Em instantes você receberá um <strong>email</strong> com os documentos que precisarão ser
+      <strong>assinados digitalmente pelo Gov.br</strong>. São eles:<br><br>
+      • Contrato de Prestação de Serviços Jurídicos<br>
+      • Procuração<br>
+      • Declarações (se aplicável)<br><br>
+      Após assinar pelo Gov.br, volte aqui para enviar os documentos assinados.
+    </div>
+    <button class="btn btn-primario" onclick="irParaEtapa(4)">
+      Já assinei, enviar documentos →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">Voltar ao painel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 13 — ETAPA 4: ENVIO DE DOCS ASSINADOS
+══════════════════════════════════════ -->
+<div class="tela" id="tela-etapa4">
+  <div class="progresso-bar">
+    <div class="prog-steps">
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Financeiro</div></div>
+      <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Documentos</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">4</div><div class="prog-label">Assinados</div></div>
+    </div>
+  </div>
+  <div class="card-central" style="margin-top:12px;">
+    <div class="card-icon">📝</div>
+    <div class="card-titulo">Envio dos Documentos Assinados</div>
+    <div class="card-sub">Envie aqui os documentos que você recebeu por email e assinou digitalmente pelo Gov.br.</div>
+
+    <div class="lgpd-box" style="margin-bottom:20px;">
+      💡 Abra o email que recebeu do Autentique, assine cada documento com sua conta Gov.br e depois envie os arquivos assinados abaixo. Apenas arquivos PDF.
+    </div>
+
+    <div id="lista-docs-assinados" style="margin-bottom:20px;"></div>
+
+    <button class="btn btn-primario" id="btn-concluir-assinados" onclick="concluirEtapa4()" disabled>
+      Concluir e finalizar processo →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar ao painel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 14 — PROCESSO CONCLUÍDO
+══════════════════════════════════════ -->
+<div class="tela" id="tela-concluido">
+  <div class="card-central" style="margin-top:24px;text-align:center;">
+    <div style="font-size:4rem;margin-bottom:16px;">⚖️</div>
+    <div class="card-titulo" style="text-align:center;">Sua vaga é sua!</div>
+    <div class="card-sub" style="text-align:center;margin-bottom:24px;">
+      Parabéns! Você concluiu todo o processo com sucesso.
+    </div>
+    <div class="lgpd-box" style="text-align:left;margin-bottom:24px;">
+      <strong style="color:var(--dourado);">O que acontece agora?</strong><br><br>
+      Todos os seus documentos e declarações foram recebidos e estão em mãos do escritório
+      <strong>Adriano Aquino Advocacia</strong>.<br><br>
+      Nossa equipe analisará tudo com cuidado e entrará em contato para os próximos passos
+      da sua ação de nomeação.<br><br>
+      <strong>Você fez sua parte — agora é com a gente! 💪</strong>
+    </div>
+    <div class="info-box aviso">
+      📱 Fique atento ao seu email e WhatsApp. Em breve entraremos em contato.
+    </div>
+  </div>
+</div>
+
+<script>
+// Script principal
+window.onerror = function(msg, src, line, col, err) {
+  dbg('ERRO GLOBAL linha ' + line + ': ' + msg, 'erro');
+  return false;
+};
+
+try {
+
+// ========================================
+// CONFIGURAÇÃO
+// ========================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbw-UsazPQKg2yMOXfaBIjOXdrjtGqDaGY62AeI6LmYJj2sBBhadagf1bYAoo6BdEYUx/exec';
+
+// ========================================
+// STATE
+// ========================================
+let estado = {
+  cpf: '',
+  email: '',
+  nome: '',
+  senhaGerada: '',
+  cliente: null,
+  etapas: { 1: false, 2: false, 3: false, 4: false },
+};
+
+// ========================================
+// CPF e ACEITE — definidos em script isolado acima
+// ========================================
+
+
+
+// ========================================
+// UTILITÁRIOS
+// ========================================
+function mostrarTela(id) {
+  dbg('mostrarTela: ' + id);
+  document.querySelectorAll('.tela').forEach(t => {
+    t.classList.remove('ativa');
+    t.style.display = 'none';
+  });
+  const tela = document.getElementById(id);
+  if (!tela) { dbg('ERRO: tela nao encontrada: ' + id, 'erro'); return; }
+  tela.style.display = 'flex';
+  setTimeout(() => tela.classList.add('ativa'), 10);
+  window.scrollTo(0, 0);
+}
+
+function toast(msg, tempo = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('visivel');
+  setTimeout(() => el.classList.remove('visivel'), tempo);
+}
+
+function gerarSenha6() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function formatarCPFTexto(cpf) {
+  const n = cpf.replace(/\D/g,'');
+  return n.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
+// ========================================
+// INICIAR ACESSO
+// ========================================
+// ========================================
+// INICIAR ACESSO
+// ========================================
+async function _iniciarAcessoReal() {
+  const cpf = document.getElementById('cpf-input').value.replace(/\D/g,'');
+  if (!validarCPFNum(cpf)) return;
+  estado.cpf = cpf;
+
+  const btn = document.getElementById('btn-continuar');
+  btn.innerHTML = '<span class="spinner"></span>Verificando...';
+  btn.disabled = true;
+
+  try {
+    const res = await chamarAPI('verificarCPF', { cpf });
+    if (res.existe) {
+      // CPF cadastrado — guardar email cadastrado e mostrar tela de senha
+      // NAO enviar email automaticamente — cliente pode ter a senha guardada
+      estado.email = res.email;
+      estado.nome  = res.nome;
+      // Buscar senha atual do backend para validar o que o cliente digitar
+      const resSenha = await chamarAPI('buscarSenha', { cpf });
+      estado.senhaGerada = resSenha?.senha || '';
+      document.getElementById('cpf-display-existente').textContent = formatarCPFTexto(cpf);
+      document.getElementById('msg-bem-vindo').textContent =
+        (res.nome ? 'Ola, ' + res.nome.split(' ')[0] + '! ' : '') +
+        'Digite sua senha de acesso. Se nao lembrar, clique em Reenviar senha.';
+      mostrarTela('tela-existente-senha');
+    } else {
+      // CPF novo — pedir email
+      document.getElementById('cpf-display-novo').textContent = formatarCPFTexto(cpf);
+      mostrarTela('tela-novo-email');
+    }
+  } catch(e) {
+    toast('Erro de conexao. Tente novamente.');
+  } finally {
+    btn.innerHTML = 'Continuar →';
+    btn.disabled = false;
+  }
+}
+
+function mascararEmail(email) {
+  if (!email) return 'seu email';
+  const [user, dom] = email.split('@');
+  return user.substring(0,3) + '***@' + dom;
+}
+
+// ========================================
+// EMAIL NOVO CLIENTE
+// ========================================
+function validarEmail(input) {
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+  document.getElementById('btn-enviar-senha').disabled = !ok;
+  document.getElementById('email-novo-erro').classList.toggle('visivel', input.value.length > 5 && !ok);
+  input.classList.toggle('erro', input.value.length > 5 && !ok);
+  input.classList.toggle('ok', ok);
+}
+
+async function enviarSenhaNovo() {
+  const email = document.getElementById('email-novo').value.trim().toLowerCase();
+  estado.email = email;
+
+  const btn = document.getElementById('btn-enviar-senha');
+  btn.innerHTML = '<span class="spinner"></span>Enviando...';
+  btn.disabled = true;
+
+  try {
+    // Se CPF ja existe mas email errado, o backend envia alerta para email correto
+    // e este email digitado e tratado como novo cadastro
+    const senha = gerarSenha6();
+    const res = await chamarAPI('enviarSenha', { cpf: estado.cpf, email, senha, tipo: 'novo' });
+    estado.senhaGerada = res?.senha || senha;
+    document.getElementById('email-enviado').textContent = email;
+    mostrarTela('tela-confirmar-senha');
+    setTimeout(() => document.querySelectorAll('.cod-novo')[0]?.focus(), 300);
+  } catch(e) {
+    toast('Erro ao enviar email. Tente novamente.');
+    btn.innerHTML = 'Enviar senha por email →';
+    btn.disabled = false;
+  }
+}
+
+async function reenviarSenhaNovo() {
+  try {
+    const res = await chamarAPI('enviarSenha', {
+      cpf: estado.cpf, email: estado.email,
+      senha: estado.senhaGerada, tipo: 'novo'
+    });
+    estado.senhaGerada = res?.senha || estado.senhaGerada;
+    toast('Senha reenviada para o seu email!');
+    document.querySelectorAll('.cod-novo').forEach(i => i.value = '');
+    document.querySelectorAll('.cod-novo')[0]?.focus();
+    document.getElementById('btn-verificar-novo').disabled = true;
+  } catch(e) { toast('Erro ao reenviar. Tente novamente.'); }
+}
+
+// ========================================
+// INPUTS DE CÓDIGO (6 dígitos)
+// ========================================
+function moveFoco(input, idx) {
+  input.value = input.value.replace(/\D/g,'').slice(-1);
+  if (input.value && idx < 5) {
+    document.querySelectorAll('.cod')[idx+1]?.focus();
+  }
+  const codigo = Array.from(document.querySelectorAll('.cod')).map(i => i.value).join('');
+  document.getElementById('btn-verificar').disabled = codigo.length < 6;
+}
+
+function moveFocoNovo(input, idx) {
+  input.value = input.value.replace(/\D/g,'').slice(-1);
+  if (input.value && idx < 5) {
+    document.querySelectorAll('.cod-novo')[idx+1]?.focus();
+  }
+  const codigo = Array.from(document.querySelectorAll('.cod-novo')).map(i => i.value).join('');
+  document.getElementById('btn-verificar-novo').disabled = codigo.length < 6;
+}
+
+// ========================================
+// VERIFICAR SENHAS
+// ========================================
+async function verificarSenha() {
+  const digitado = Array.from(document.querySelectorAll('.cod')).map(i => i.value).join('');
+  if (digitado !== estado.senhaGerada) {
+    toast('❌ Senha incorreta. Verifique e tente novamente.');
+    return;
+  }
+  await entrarNoPainel('retorno');
+}
+
+async function verificarSenhaNovo() {
+  const digitado = Array.from(document.querySelectorAll('.cod-novo')).map(i => i.value).join('');
+  if (digitado !== estado.senhaGerada) {
+    toast('❌ Senha incorreta. Verifique e tente novamente.');
+    return;
+  }
+  await entrarNoPainel('novo');
+}
+
+async function reenviarSenha() {
+  // Reenviar a MESMA senha cadastrada — nao gera nova
+  try {
+    const res = await chamarAPI('enviarSenha', {
+      cpf: estado.cpf, email: estado.email,
+      senha: estado.senhaGerada, nome: estado.nome, tipo: 'retorno'
+    });
+    estado.senhaGerada = res?.senha || estado.senhaGerada;
+    toast('Senha reenviada para o seu email!');
+    document.querySelectorAll('.cod').forEach(i => i.value = '');
+    document.querySelectorAll('.cod')[0]?.focus();
+    document.getElementById('btn-verificar').disabled = true;
+  } catch(e) { toast('Erro ao reenviar. Tente novamente.'); }
+}
+
+// ========================================
+// ENTRAR NO PAINEL
+// ========================================
+async function entrarNoPainel(tipo) {
+  try {
+    if (tipo === 'novo') {
+      await chamarAPI('criarCliente', { cpf: estado.cpf, email: estado.email });
+      estado.cliente = { etapas: {}, nome: '' };
+    } else {
+      // Carregar dados do cliente — preencher campos com dados ja existentes
+      const dados = await chamarAPI('carregarCliente', { cpf: estado.cpf });
+      estado.cliente        = dados;
+      estado.nome           = dados.nome || '';
+      estado.situacaoTrabalho = dados.situacaoTrabalho || '';
+      estado.pedirJG        = dados.pedirJG === 'Sim';
+
+      // Pre-preencher campos da Etapa 1 se ja foram salvos
+      if (dados.nome) {
+        var dadosCarregados = dados;
+        setTimeout(function() {
+          function setVal(id, val) {
+            var el = document.getElementById(id);
+            if (el && val) el.value = val;
+          }
+          setVal('e1-nome', dadosCarregados.nome);
+          setVal('e1-tel',  dadosCarregados.telefone);
+          setVal('e1-cep',  dadosCarregados.cep);
+          setVal('e1-rua',  dadosCarregados.rua);
+          setVal('e1-numero', dadosCarregados.numero);
+          setVal('e1-complemento', dadosCarregados.complemento);
+          setVal('e1-bairro', dadosCarregados.bairro);
+          setVal('e1-cidade', dadosCarregados.cidade);
+          setVal('e1-numDoc', dadosCarregados.numDoc);
+          setVal('e1-orgaoExp', dadosCarregados.orgaoExp);
+          setVal('e1-cargo', dadosCarregados.cargo);
+          setVal('e1-salario', dadosCarregados.salario);
+          if (dadosCarregados.sexo) {
+            setVal('e1-sexo', dadosCarregados.sexo);
+            atualizarEstadoCivil();
+            setTimeout(function() { setVal('e1-estadocivil', dadosCarregados.estadoCivil); }, 150);
+          }
+        }, 300);
+      }
+      await chamarAPI('notificarRetorno', { cpf: estado.cpf, nome: estado.nome });
+    }
+    renderizarPainel();
+    mostrarTela('tela-painel');
+  } catch(e) {
+    toast('Erro ao acessar. Tente novamente.');
+  }
+}
+
+// ========================================
+// PAINEL
+// ========================================
+function renderizarPainel() {
+  const c = estado.cliente;
+  const nome = c?.nome || '';
+  const primeiroNome = nome ? nome.split(' ')[0] : '';
+
+  document.getElementById('painel-nome-boas-vindas').textContent =
+    primeiroNome ? `Olá, ${primeiroNome}! 👋` : 'Olá! 👋';
+
+  const etapas = c?.etapas || {};
+  const e1 = etapas['1'] === 'concluido';
+  const e2 = etapas['2'] === 'concluido';
+  const e3 = etapas['3'] === 'concluido';
+  const e4 = etapas['4'] === 'concluido';
+
+  // Progresso
+  ['1','2','3','4'].forEach(n => {
+    const p = document.getElementById('prog-'+n);
+    p.classList.remove('ativa','feito');
+  });
+
+  // Checklist
+  atualizarCheck('chk-1', e1, '✓', 'Concluído', '1', e1 || true);
+  atualizarCheck('chk-2', e2, '✓', 'Concluído', '2', e1);
+  atualizarCheck('chk-3', e3, '✓', 'Concluído', '3', e2);
+  atualizarCheck('chk-4', e4, '✓', 'Concluído', '4', e3);
+
+  // Botão principal
+  const btn = document.getElementById('btn-continuar-etapa');
+  if (e4) {
+    btn.textContent = '✅ Processo concluído!';
+    btn.disabled = true;
+  } else if (e3) {
+    btn.textContent = 'Ir para Envio de Docs Assinados →';
+    document.getElementById('prog-4').classList.add('ativa');
+  } else if (e2) {
+    btn.textContent = 'Ir para Documentos →';
+    document.getElementById('prog-3').classList.add('ativa');
+  } else if (e1) {
+    btn.textContent = 'Ir para Dados Financeiros →';
+    document.getElementById('prog-2').classList.add('ativa');
+  } else {
+    btn.textContent = 'Iniciar Etapa 1 →';
+    document.getElementById('prog-1').classList.add('ativa');
+  }
+
+  // Marcar feitos
+  if (e1) { document.getElementById('prog-1').classList.remove('ativa'); document.getElementById('prog-1').classList.add('feito'); }
+  if (e2) { document.getElementById('prog-2').classList.remove('ativa'); document.getElementById('prog-2').classList.add('feito'); }
+  if (e3) { document.getElementById('prog-3').classList.remove('ativa'); document.getElementById('prog-3').classList.add('feito'); }
+  if (e4) { document.getElementById('prog-4').classList.remove('ativa'); document.getElementById('prog-4').classList.add('feito'); }
+}
+
+function atualizarCheck(id, concluido, iconeOk, statusOk, num, desbloqueado) {
+  const el = document.getElementById(id);
+  const icone = document.getElementById(id+'-icone');
+  const status = document.getElementById(id+'-status');
+
+  el.classList.remove('concluido','bloqueado');
+  el.style.cursor = desbloqueado ? 'pointer' : 'default';
+
+  if (concluido) {
+    el.classList.add('concluido');
+    icone.className = 'check-icone concluido';
+    icone.textContent = '✓';
+    status.textContent = 'Concluído';
+  } else if (desbloqueado) {
+    icone.className = 'check-icone pendente';
+    icone.textContent = num;
+    status.textContent = 'Pendente — toque para preencher';
+  } else {
+    el.classList.add('bloqueado');
+    icone.className = 'check-icone bloqueado';
+    icone.textContent = '🔒';
+    status.textContent = 'Aguardando etapas anteriores';
+  }
+}
+
+function continuarEtapa() {
+  const c = estado.cliente?.etapas || {};
+  if (!c['1']) irParaEtapa(1);
+  else if (!c['2']) irParaEtapa(2);
+  else if (!c['3']) irParaEtapa(3);
+  else if (!c['4']) irParaEtapa(4);
+}
+
+// ========================================
+// ESQUECI A SENHA
+// ========================================
+function abrirEsqueciSenha() {
+  document.getElementById('cpf-display-esqueci').textContent = formatarCPFTexto(estado.cpf);
+  document.getElementById('email-esqueci').value = '';
+  document.getElementById('btn-confirmar-esqueci').disabled = true;
+  mostrarTela('tela-esqueci-senha');
+}
+
+function validarEmailEsqueci(input) {
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+  document.getElementById('btn-confirmar-esqueci').disabled = !ok;
+  document.getElementById('email-esqueci-erro').classList.toggle('visivel', input.value.length > 5 && !ok);
+}
+
+async function confirmarEsqueci() {
+  const email = document.getElementById('email-esqueci').value.trim().toLowerCase();
+  const btn   = document.getElementById('btn-confirmar-esqueci');
+  btn.innerHTML = '<span class="spinner"></span>Verificando...';
+  btn.disabled  = true;
+
+  try {
+    const res = await chamarAPI('esqueceuSenha', { cpf: estado.cpf, email });
+
+    if (res.encontrado) {
+      // CPF + email batem — reenviar senha existente
+      toast('📩 Senha reenviada para o seu email!');
+      setTimeout(() => mostrarTela('tela-existente-senha'), 1500);
+    } else {
+      // Não bate — tratar como novo cliente
+      estado.email = email;
+      document.getElementById('cpf-display-novo').textContent = formatarCPFTexto(estado.cpf);
+      mostrarTela('tela-novo-email');
+      document.getElementById('email-novo').value = email;
+      toast('ℹ️ Email não encontrado neste CPF — iniciando novo cadastro.');
+    }
+  } catch {
+    toast('⚠️ Erro de conexão. Tente novamente.');
+  } finally {
+    btn.innerHTML = 'Reenviar minha senha →';
+    btn.disabled  = false;
+  }
+}
+
+// ========================================
+// ========================================
+let rendas   = [];
+let despesas = [];
+
+function irParaEtapa(n) {
+  if (n === 1) mostrarTela('tela-etapa1a');
+  else if (n === 2) mostrarTela('tela-etapa2-trabalho');
+  else if (n === 3) irParaEtapa3();
+  else if (n === 4) irParaEtapa4();
+}
+
+// ========================================
+// ETAPA 4 — ASSINATURA DIGITAL (AUTENTIQUE)
+// ========================================
+const AUTENTIQUE_TOKEN = 'c1ba69a3e872b156cecd65a4ae5b8553fd2a604f8049639cdd22c595a4cb41bf';
+let documentosAssinatura = []; // lista de docs gerados
+let autentiqueDocIds     = []; // IDs retornados pelo Autentique
+
+function irParaEtapa4() {
+  renderizarEtapa4();
+  mostrarTela('tela-etapa4');
+}
+
+// Docs que o cliente deve enviar assinados
+function montarDocsAssinados() {
+  const docs = [];
+  docs.push({ id: 'assinado-doc00', nome: 'Doc 00 - Contrato de Prestação de Serviços Jurídicos (assinado)' });
+  docs.push({ id: 'assinado-doc03', nome: 'Doc 03 - Procuração (assinada)' });
+  if (estado.pedirJG) {
+    docs.push({ id: 'assinado-doc05', nome: 'Doc 05 - Declaração de Hipossuficiência (assinada)' });
+  }
+  const naoDeclarou = [2025,2024,2023].some(a => declarouIR[a] === false);
+  if (naoDeclarou) {
+    docs.push({ id: 'assinado-doc06a', nome: 'Doc 06a - Declaração de Isenção de IR (assinada)' });
+  }
+  return docs;
+}
+
+// Docs enviados assinados (etapa 4)
+let docsAssinados = {};
+
+function renderizarEtapa4() {
+  const docs = montarDocsAssinados();
+  const lista = document.getElementById('lista-docs-assinados');
+  if (!lista) return;
+
+  const totalEnviados = docs.filter(d => docsAssinados[d.id]).length;
+  const pct = docs.length > 0 ? Math.round((totalEnviados / docs.length) * 100) : 0;
+
+  lista.innerHTML = '<div style="margin-bottom:16px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+      '<span style="font-size:0.72rem;color:var(--cinza);">Documentos enviados</span>' +
+      '<span style="font-size:0.78rem;font-weight:700;color:' + (pct===100?'var(--ok)':'var(--dourado)') + ';">' + totalEnviados + '/' + docs.length + '</span>' +
+    '</div>' +
+    '<div style="height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">' +
+      '<div style="height:100%;width:' + pct + '%;background:' + (pct===100?'var(--ok)':'var(--dourado)') + ';transition:width 0.4s;border-radius:4px;"></div>' +
+    '</div></div>' +
+    docs.map(function(doc) {
+      var env = docsAssinados[doc.id];
+      return '<div class="doc-upload-item ' + (env ? 'enviado' : 'pendente-obrig') + '">' +
+        '<div class="doc-nome">' + doc.nome + '</div>' +
+        '<div class="doc-desc">Apenas arquivos PDF</div>' +
+        '<div class="doc-status ' + (env ? (env.status==='enviando'?'pend':env.status==='erro'?'erro':'ok') : 'pend') + '">' +
+          (env ? (env.status==='enviando' ? '<span class="spinner"></span> Enviando...' : env.status==='erro' ? 'Erro — tente novamente' : '✅ ' + env.nome) : '⏳ Pendente') +
+        '</div>' +
+        '<label class="btn-upload" for="upload-ass-' + doc.id + '">' + (env ? 'Substituir' : 'Selecionar PDF') + '</label>' +
+        '<input type="file" id="upload-ass-' + doc.id + '" accept=".pdf" style="display:none;" onchange="receberDocAssinado(\'' + doc.id + '\', this)" />' +
+      '</div>';
+    }).join('');
+
+  document.getElementById('btn-concluir-assinados').disabled = pct < 100;
+}
+
+async function receberDocAssinado(docId, input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+    toast('Apenas arquivos PDF são aceitos!');
+    input.value = '';
+    return;
+  }
+  if (file.size > 9 * 1024 * 1024) { toast('Arquivo muito grande. Máximo 9MB.'); return; }
+  docsAssinados[docId] = { nome: file.name, arquivo: file, status: 'enviando' };
+  renderizarEtapa4();
+  try {
+    var base64 = await lerArquivoBase64(file);
+    await chamarAPI('uploadDoc', {
+      cpf: estado.cpf, docId: docId,
+      nome: file.name.endsWith('.pdf') ? file.name : file.name + '.pdf',
+      conteudoBase64: base64,
+    });
+    docsAssinados[docId].status = 'enviado';
+    toast(file.name + ' enviado!');
+  } catch(e) {
+    docsAssinados[docId].status = 'erro';
+    toast('Erro ao enviar. Tente novamente.');
+  }
+  renderizarEtapa4();
+}
+
+async function concluirEtapa4() {
+  var btn = document.getElementById('btn-concluir-assinados');
+  btn.innerHTML = '<span class="spinner"></span>Concluindo...';
+  btn.disabled = true;
+  try {
+    await chamarAPI('salvarEtapa', { cpf: estado.cpf, etapa: '4' });
+    if (!estado.cliente) estado.cliente = { etapas: {} };
+    estado.cliente.etapas['4'] = 'concluido';
+    mostrarConcluido();
+  } catch(e) {
+    toast('Erro ao concluir. Tente novamente.');
+    btn.innerHTML = 'Concluir e finalizar processo →';
+    btn.disabled = false;
+  }
+}
+
+function mostrarConcluido() {
+  renderizarPainel();
+  mostrarTela('tela-concluido');
+}
+
+// Mapeamento situação → documento exigido
+const DOCS_TRABALHO = {
+  sem_vinculo:          { label: 'Atualmente sem nenhum vínculo',                              doc: 'Cópia da Carteira de Trabalho — mostrando ausência ou encerramento de vínculo' },
+  carteira_assinada:    { label: 'Trabalhando com carteira de trabalho assinada',              doc: 'Cópia do Contrato de Trabalho na Carteira de Trabalho (CTPS)' },
+  vinculo_publico:      { label: 'Trabalhando com vínculo com município, estado ou união',     doc: 'Contracheque — último mês' },
+  sem_vinculo_comprovado:{ label: 'Trabalhando sem vínculo comprovado',                        doc: 'Cópia da Carteira de Trabalho (CTPS) sem vínculo ativo' },
+  aposentado:           { label: 'Aposentado, pensionista ou beneficiário de programa do governo', doc: 'Carta de Concessão do benefício' },
+};
+
+function selecionarTrabalho(tipo) {
+  estado.situacaoTrabalho = tipo;
+  mostrarTela('tela-etapa2-jg');
+}
+
+function responderJG(sim) {
+  estado.pedirJG = sim;
+  if (sim) {
+    rendas = [];
+    despesas = [];
+    renderListaRendas();
+    renderListaDespesas();
+    adicionarRenda(); // começa com 1 linha
+    mostrarTela('tela-etapa2-rendas');
+  } else {
+    salvarEtapa2Simples();
+  }
+}
+
+// ========================================
+function adicionarRenda() {
+  rendas.push({ descricao: '', valor: '' });
+  renderListaRendas();
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.renda-desc');
+    inputs[inputs.length - 1]?.focus();
+  }, 100);
+}
+
+function renderListaRendas() {
+  const lista = document.getElementById('lista-rendas');
+  lista.innerHTML = rendas.map((r, i) => `
+    <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;">
+      <div style="flex:1;">
+        <input type="text" class="renda-desc campo-input" placeholder="Ex: Salário, Aposentadoria..."
+          value="${r.descricao}"
+          oninput="rendas[${i}].descricao=this.value.replace(/^\\s+/,'');atualizarTotais()"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--branco);font-family:'DM Sans',sans-serif;margin-bottom:6px;" />
+        <input type="tel" class="renda-val" placeholder="R$ 0,00" inputmode="decimal"
+          value="${r.valor}"
+          oninput="formatarMoedaInput(this);rendas[${i}].valor=this.value;atualizarTotais()"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--ok);font-family:'DM Sans',sans-serif;font-weight:600;" />
+      </div>
+      ${rendas.length > 1 ? `<button onclick="removerRenda(${i})" style="background:rgba(224,82,82,0.15);border:none;color:var(--erro);border-radius:8px;padding:8px 10px;cursor:pointer;margin-top:2px;flex-shrink:0;">✕</button>` : ''}
+    </div>`).join('');
+  atualizarTotais();
+}
+
+function removerRenda(i) {
+  rendas.splice(i, 1);
+  renderListaRendas();
+}
+
+// ========================================
+function adicionarDespesa() {
+  despesas.push({ descricao: '', valor: '' });
+  renderListaDespesas();
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.desp-desc');
+    inputs[inputs.length - 1]?.focus();
+  }, 100);
+}
+
+function renderListaDespesas() {
+  const lista = document.getElementById('lista-despesas');
+  if (!lista) return;
+  lista.innerHTML = despesas.map((d, i) => `
+    <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;">
+      <div style="flex:1;">
+        <input type="text" class="desp-desc" placeholder="Ex: Aluguel, Escola, Farmácia..."
+          value="${d.descricao}"
+          oninput="despesas[${i}].descricao=this.value.replace(/^\\s+/,'');atualizarTotais()"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--branco);font-family:'DM Sans',sans-serif;margin-bottom:6px;" />
+        <input type="tel" class="desp-val" placeholder="R$ 0,00" inputmode="decimal"
+          value="${d.valor}"
+          oninput="formatarMoedaInput(this);despesas[${i}].valor=this.value;atualizarTotais()"
+          style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--erro);font-family:'DM Sans',sans-serif;font-weight:600;" />
+      </div>
+      ${despesas.length > 1 ? `<button onclick="removerDespesa(${i})" style="background:rgba(224,82,82,0.15);border:none;color:var(--erro);border-radius:8px;padding:8px 10px;cursor:pointer;margin-top:2px;flex-shrink:0;">✕</button>` : ''}
+    </div>`).join('');
+  atualizarTotais();
+}
+
+function removerDespesa(i) {
+  despesas.splice(i, 1);
+  renderListaDespesas();
+}
+
+// ========================================
+function parseMoeda(v) {
+  if (!v) return 0;
+  return parseFloat(v.replace(/[R$\s.]/g,'').replace(',','.')) || 0;
+}
+
+function formatMoeda(v) {
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function atualizarTotais() {
+  const totalR = rendas.reduce((s,r) => s + parseMoeda(r.valor), 0);
+  const totalD = despesas.reduce((s,d) => s + parseMoeda(d.valor), 0);
+
+  // Tela rendas
+  const trv = document.getElementById('total-rendas-valor');
+  const trb = document.getElementById('total-rendas-box');
+  if (trv) { trv.textContent = formatMoeda(totalR); }
+  if (trb) { trb.style.display = totalR > 0 ? 'flex' : 'none'; }
+
+  // Tela despesas
+  const tdv = document.getElementById('total-despesas-valor');
+  if (tdv) tdv.textContent = formatMoeda(totalD);
+
+  // Botões — aceitar R$ 0,00 se situação for sem vínculo
+  const semVinculo = estado.situacaoTrabalho === 'sem_vinculo' || estado.situacaoTrabalho === 'sem_vinculo_comprovado';
+  const rendaOk = rendas.length > 0 && rendas.every(function(r) {
+    return r.descricao.trim() && (semVinculo ? parseMoeda(r.valor) >= 0 : parseMoeda(r.valor) > 0);
+  });
+  const despOk  = despesas.length > 0 && despesas.every(function(d) { return d.descricao.trim() && parseMoeda(d.valor) >= 0; });
+  const btnD = document.getElementById('btn-ir-despesas');
+  const btnT = document.getElementById('btn-ver-tabela');
+  if (btnD) btnD.disabled = !rendaOk;
+  if (btnT) btnT.disabled = !despOk;
+}
+
+function irParaDespesas() {
+  if (despesas.length === 0) adicionarDespesa();
+  else renderListaDespesas();
+  mostrarTela('tela-etapa2-despesas');
+  atualizarTotais();
+}
+
+function verTabela() {
+  const totalR = rendas.reduce((s,r) => s + parseMoeda(r.valor), 0);
+  const totalD = despesas.reduce((s,d) => s + parseMoeda(d.valor), 0);
+  const pct = totalR > 0 ? Math.round((totalD / totalR) * 100) : 0;
+
+  // Linhas rendas
+  document.getElementById('tabela-rendas-linhas').innerHTML = rendas.map(r => `
+    <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.82rem;">
+      <span style="color:var(--cinza);">${r.descricao}</span>
+      <span style="color:var(--ok);font-weight:600;">${formatMoeda(parseMoeda(r.valor))}</span>
+    </div>`).join('');
+
+  // Linhas despesas
+  document.getElementById('tabela-despesas-linhas').innerHTML = despesas.map(d => `
+    <div style="display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.82rem;">
+      <span style="color:var(--cinza);">${d.descricao}</span>
+      <span style="color:var(--erro);font-weight:600;">${formatMoeda(parseMoeda(d.valor))}</span>
+    </div>`).join('');
+
+  document.getElementById('tab-total-rendas').textContent   = formatMoeda(totalR);
+  document.getElementById('tab-total-despesas').textContent = formatMoeda(totalD);
+
+  // Percentual com cor
+  const pEl  = document.getElementById('tab-percentual');
+  const pLbl = document.getElementById('tab-percentual-label');
+  const pBox = document.getElementById('tab-percentual-box');
+  pEl.textContent = `${pct}%`;
+  if (pct <= 30) {
+    pEl.style.color = 'var(--ok)';
+    pBox.style.background = 'rgba(76,175,130,0.08)';
+    pLbl.textContent = 'Situação favorável — baixo comprometimento';
+    pLbl.style.color = '#a8d5be';
+  } else if (pct <= 70) {
+    pEl.style.color = 'var(--dourado)';
+    pBox.style.background = 'rgba(201,168,76,0.08)';
+    pLbl.textContent = 'Atenção — comprometimento moderado';
+    pLbl.style.color = 'var(--dourado)';
+  } else {
+    pEl.style.color = 'var(--erro)';
+    pBox.style.background = 'rgba(224,82,82,0.08)';
+    pLbl.textContent = 'Alto comprometimento — boa base para justiça gratuita';
+    pLbl.style.color = '#f0a0a0';
+  }
+
+  mostrarTela('tela-etapa2-tabela');
+}
+
+async function salvarEtapa2() {
+  const btn = document.getElementById('btn-salvar-etapa2');
+  btn.innerHTML = '<span class="spinner"></span>Salvando...';
+  btn.disabled = true;
+  try {
+    await chamarAPI('salvarEtapa', {
+      cpf: estado.cpf, etapa: '2',
+      situacaoTrabalho: estado.situacaoTrabalho || '',
+      pedirJG: true, rendas, despesas,
+    });
+    if (!estado.cliente) estado.cliente = { etapas: {} };
+    estado.cliente.etapas['2'] = 'concluido';
+    toast('✅ Etapa 2 salva!');
+    renderizarPainel();
+    setTimeout(() => mostrarTela('tela-painel'), 800);
+  } catch {
+    toast('⚠️ Erro ao salvar. Tente novamente.');
+    btn.innerHTML = '💾 Confirmar e Salvar →';
+    btn.disabled = false;
+  }
+}
+
+async function salvarEtapa2Simples() {
+  try {
+    await chamarAPI('salvarEtapa', { cpf: estado.cpf, etapa: '2', situacaoTrabalho: estado.situacaoTrabalho || '', pedirJG: false });
+    if (!estado.cliente) estado.cliente = { etapas: {} };
+    estado.cliente.etapas['2'] = 'concluido';
+    toast('✅ Etapa 2 salva!');
+    renderizarPainel();
+    setTimeout(() => mostrarTela('tela-painel'), 800);
+  } catch {
+    toast('⚠️ Erro ao salvar. Tente novamente.');
+  }
+}
+
+// ========================================
+// ETAPA 3 — DOCUMENTOS
+// ========================================
+let docsEnviados = {}; // { docId: { nome, arquivo } }
+let declarouIR   = { 2025: null, 2024: null, 2023: null }; // null=não respondido
+
+function irParaEtapa3() {
+  if (estado.pedirJG && (declarouIR[2025] === null)) {
+    renderIRPerguntas();
+    mostrarTela('tela-etapa3-ir');
+  } else {
+    renderizarEtapa3();
+    mostrarTela('tela-etapa3');
+  }
+}
+
+function renderIRPerguntas() {
+  const anos = [2025, 2024, 2023];
+  document.getElementById('ir-perguntas').innerHTML = anos.map(ano => `
+    <div style="background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:14px;">
+      <div style="font-size:0.82rem;font-weight:600;color:var(--branco);margin-bottom:10px;">
+        Você declarou IR em <span style="color:var(--dourado);">${ano}</span>?
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="marcarIR(${ano}, true, this)"
+          class="btn-ir-sim-nao ${declarouIR[ano]===true?'selecionado':''}"
+          style="flex:1;padding:10px;border-radius:8px;border:1.5px solid ${declarouIR[ano]===true?'var(--ok)':'rgba(255,255,255,0.12)'};background:${declarouIR[ano]===true?'rgba(76,175,130,0.15)':'rgba(255,255,255,0.04)'};color:${declarouIR[ano]===true?'var(--ok)':'var(--cinza)'};font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;">
+          ✅ Sim
+        </button>
+        <button onclick="marcarIR(${ano}, false, this)"
+          class="btn-ir-sim-nao ${declarouIR[ano]===false?'selecionado':''}"
+          style="flex:1;padding:10px;border-radius:8px;border:1.5px solid ${declarouIR[ano]===false?'var(--dourado)':'rgba(255,255,255,0.12)'};background:${declarouIR[ano]===false?'rgba(201,168,76,0.1)':'rgba(255,255,255,0.04)'};color:${declarouIR[ano]===false?'var(--dourado)':'var(--cinza)'};font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;">
+          ❌ Não
+        </button>
+      </div>
+    </div>`).join('');
+  verificarIRCompleto();
+}
+
+function marcarIR(ano, valor, btn) {
+  declarouIR[ano] = valor;
+  renderIRPerguntas();
+}
+
+function verificarIRCompleto() {
+  const todos = Object.values(declarouIR).every(v => v !== null);
+  const btnConf = document.getElementById('btn-confirmar-ir');
+  if (btnConf) btnConf.disabled = !todos;
+}
+
+function confirmarIR() {
+  renderizarEtapa3();
+  mostrarTela('tela-etapa3');
+
+  // Gerar Doc 06a em background se houver anos sem declarar
+  const naoDeclarou = Object.entries(declarouIR).filter(([,v]) => v === false).map(([a]) => a);
+  if (naoDeclarou.length > 0) {
+    const anosDeclarados = Object.entries(declarouIR)
+      .filter(([,v]) => v === true).map(([a]) => a).join(', ');
+    chamarAPI('salvarEtapa', {
+      cpf: estado.cpf,
+      etapa: '3',
+      declarouIR,
+      docsEnviados: Object.keys(docsEnviados),
+      apenasGerarDoc06a: true,
+    }).catch(e => console.log('Erro gerando doc06a:', e));
+  }
+}
+
+function montarListaDocs() {
+  const docs = [];
+
+  // Sempre obrigatórios — sem número visível
+  docs.push({
+    id: 'doc01',
+    nome: 'Documento de Identificação com CPF',
+    desc: 'RG ou CNH — frente e verso em um único arquivo PDF ou foto.',
+    obrig: true,
+  });
+  docs.push({
+    id: 'doc02',
+    nome: 'Comprovante de Residência',
+    desc: 'Conta de luz, água, gás ou correspondência recente.',
+    obrig: true,
+  });
+
+  // Documento de situação de trabalho
+  const trab = DOCS_TRABALHO[estado.situacaoTrabalho];
+  if (trab) {
+    docs.push({
+      id: 'doc-trabalho',
+      nome: trab.doc,
+      desc: `Situação informada: ${trab.label}`,
+      obrig: true,
+    });
+  }
+
+  // Se pediu JG
+  if (estado.pedirJG) {
+    // IR — um upload por ano declarado
+    [2025, 2024, 2023].forEach(ano => {
+      if (declarouIR[ano] === true) {
+        docs.push({
+          id: `ir-${ano}`,
+          nome: `Declaração de Imposto de Renda — ${ano}`,
+          desc: `Envie o arquivo PDF da declaração de imposto de renda do exercício de ${ano}.`,
+          obrig: true,
+        });
+      }
+    });
+
+    // Comprovante de cada renda (individual)
+    rendas.forEach((r, i) => {
+      if (!r.descricao.trim()) return;
+      docs.push({
+        id: `renda-${i}`,
+        nome: `Comprovante de Renda: ${r.descricao}`,
+        desc: `Extrato, contracheque ou documento que comprove a renda "${r.descricao}" (${formatMoeda(parseMoeda(r.valor))}/mês) — últimos 3 meses.`,
+        obrig: true,
+      });
+    });
+
+    // Comprovante de cada despesa (individual)
+    despesas.forEach((d, i) => {
+      if (!d.descricao.trim()) return;
+      docs.push({
+        id: `despesa-${i}`,
+        nome: `Comprovante de Despesa: ${d.descricao}`,
+        desc: `Documento que comprove a despesa "${d.descricao}" (${formatMoeda(parseMoeda(d.valor))}/mês). Pode estar em nome de familiar.`,
+        obrig: true,
+      });
+    });
+  }
+
+  return docs;
+}
+
+function renderizarEtapa3() {
+  const docs = montarListaDocs();
+  const totalEnviados = docs.filter(d => docsEnviados[d.id]).length;
+  const totalObrig    = docs.filter(d => d.obrig).length;
+
+  const lista = document.getElementById('lista-docs-etapa3');
+  if (!lista) return;
+
+  // Progresso
+  const pct = totalObrig > 0 ? Math.round((totalEnviados / totalObrig) * 100) : 0;
+  lista.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:0.72rem;color:var(--cinza);">Documentos enviados</span>
+        <span style="font-size:0.78rem;font-weight:700;color:${pct===100?'var(--ok)':'var(--dourado)'};">${totalEnviados}/${totalObrig}</span>
+      </div>
+      <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${pct===100?'var(--ok)':'var(--dourado)'};transition:width 0.4s;border-radius:4px;"></div>
+      </div>
+    </div>
+    ${docs.map(doc => {
+      const env = docsEnviados[doc.id];
+      return `
+      <div class="doc-upload-item ${env ? 'enviado' : 'pendente-obrig'}">
+        <div class="doc-nome">${doc.nome}</div>
+        <div class="doc-desc">${doc.desc}</div>
+        <div class="doc-status ${env ? (env.status === 'enviando' ? 'pend' : env.status === 'erro' ? 'erro' : 'ok') : 'pend'}">
+          ${env
+            ? env.status === 'enviando'
+              ? '<span class="spinner"></span> Enviando...'
+              : env.status === 'erro'
+                ? '⚠️ Erro — toque para reenviar'
+                : '✅ ' + env.nome
+            : '⏳ Pendente'}
+        </div>
+        <label class="btn-upload" for="upload-${doc.id}">
+          ${env ? '🔄 Substituir' : '📎 Selecionar arquivo'}
+        </label>
+        <div style="font-size:0.65rem;color:var(--cinza);margin-top:4px;">Apenas arquivos PDF</div>
+        <input type="file" id="upload-${doc.id}" accept=".pdf"
+          style="display:none;" onchange="receberArquivo('${doc.id}', this)" />
+      </div>`;
+    }).join('')}`;
+
+  document.getElementById('btn-concluir-docs').disabled = pct < 100;
+}
+
+function lerArquivoBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = e => resolve(e.target.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// IDs que pertencem ao Doc 06b
+function ehDoc06b(docId) {
+  return docId === 'doc-trabalho' ||
+         docId.startsWith('renda-') ||
+         docId.startsWith('despesa-') ||
+         docId.startsWith('ir-');
+}
+
+// Nome padronizado para envio ao Drive
+function nomeArquivoPadronizado(docId, nomeOriginal) {
+  if (docId === 'doc01') return 'Doc 01 - Documento de Identificação.pdf';
+  if (docId === 'doc02') return 'Doc 02 - Comprovante de Residência.pdf';
+  if (ehDoc06b(docId))   return 'Doc 06b - ' + nomeOriginal;
+  return nomeOriginal.endsWith('.pdf') ? nomeOriginal : nomeOriginal + '.pdf';
+}
+
+async function receberArquivo(docId, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+    toast('Apenas arquivos PDF são aceitos!');
+    input.value = '';
+    return;
+  }
+  if (file.size > 9 * 1024 * 1024) { toast('Arquivo muito grande. Máximo 9MB.'); return; }
+
+  const nomeNaPasta = nomeArquivoPadronizado(docId, file.name);
+
+  // Marcar como enviando
+  docsEnviados[docId] = { nome: file.name, nomePasta: nomeNaPasta, arquivo: file, status: 'enviando' };
+  renderizarEtapa3();
+
+  // Fazer upload imediatamente em background
+  try {
+    const base64 = await lerArquivoBase64(file);
+    await chamarAPI('uploadDoc', {
+      cpf:           estado.cpf,
+      docId,
+      nome:          nomeNaPasta,
+      nomeOriginal:  file.name,
+      conteudoBase64: base64,
+    });
+    docsEnviados[docId].status = 'enviado';
+    toast(nomeNaPasta + ' enviado!');
+  } catch(e) {
+    docsEnviados[docId].status = 'erro';
+    toast('Erro ao enviar ' + file.name + '. Tente novamente.');
+  }
+  renderizarEtapa3();
+}
+
+async function concluirEtapa3() {
+  // Verificar se algum ainda está enviando
+  const enviando = Object.values(docsEnviados).filter(d => d.status === 'enviando');
+  if (enviando.length > 0) {
+    toast('Aguarde, ainda há arquivos sendo enviados...');
+    return;
+  }
+
+  // Reenviar os que deram erro
+  const comErro = Object.entries(docsEnviados).filter(([,d]) => d.status === 'erro');
+  for (const [id, doc] of comErro) {
+    try {
+      const base64 = await lerArquivoBase64(doc.arquivo);
+      await chamarAPI('uploadDoc', {
+        cpf: estado.cpf, docId: id,
+        nome: doc.nomePasta, nomeOriginal: doc.nome,
+        conteudoBase64: base64,
+      });
+      docsEnviados[id].status = 'enviado';
+    } catch(e) {
+      toast('Erro ao enviar ' + doc.nome + '. Tente novamente.');
+      return;
+    }
+  }
+
+  const btn = document.getElementById('btn-concluir-docs');
+  btn.innerHTML = '<span class="spinner"></span>Concluindo...';
+  btn.disabled = true;
+  try {
+    await chamarAPI('salvarEtapa', {
+      cpf: estado.cpf, etapa: '3',
+      declarouIR,
+      docsEnviados: Object.keys(docsEnviados),
+    });
+    if (!estado.cliente) estado.cliente = { etapas: {} };
+    estado.cliente.etapas['3'] = 'concluido';
+    mostrarTela('tela-confirmacao-etapa3');
+  } catch {
+    toast('Erro ao concluir. Tente novamente.');
+    btn.innerHTML = 'Concluir envio de documentos →';
+    btn.disabled = false;
+  }
+}
+
+// ========================================
+// ETAPA 1A — DADOS PESSOAIS
+// ========================================
+const ESTADOS_CIVIS = {
+  M: ['Solteiro','Casado','Divorciado','Viúvo','Unido Estavelmente'],
+  F: ['Solteira','Casada','Divorciada','Viúva','Unida Estavelmente'],
+};
+
+function atualizarEstadoCivil() {
+  const sexo = document.getElementById('e1-sexo').value;
+  const sel  = document.getElementById('e1-estadocivil');
+  sel.innerHTML = '<option value="">Selecione...</option>';
+  if (sexo && ESTADOS_CIVIS[sexo]) {
+    ESTADOS_CIVIS[sexo].forEach(v => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+  } else {
+    sel.innerHTML = '<option value="">Selecione o sexo primeiro...</option>';
+  }
+  verificarE1a();
+}
+
+function formatarMoedaInput(input) {
+  var v = input.value.replace(/\D/g, '');
+  if (!v) { input.value = ''; return; }
+  v = (parseInt(v) / 100).toFixed(2);
+  input.value = 'R$ ' + v.replace('.', ',').replace(/(\d)(?=(\d{3})+,)/g, '$1.');
+}
+
+function formatarTel(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,11);
+  if (v.length > 6) v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+  else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/,'($1) $2');
+  else if (v.length > 0) v = v.replace(/(\d{0,2})/,'($1');
+  input.value = v;
+  verificarE1a();
+}
+
+async function formatarCEP(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,8);
+  if (v.length > 5) v = v.replace(/(\d{5})(\d{1,3})/,'$1-$2');
+  input.value = v;
+  if (v.replace(/\D/g,'').length === 8) await buscarCEP(v.replace(/\D/g,''));
+  verificarE1a();
+}
+
+async function buscarCEP(cep) {
+  document.getElementById('cep-spinner').style.display = 'block';
+  document.getElementById('campos-endereco').style.display = 'none';
+  document.getElementById('e1-cep-erro').classList.remove('visivel');
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    const d = await res.json();
+    if (d.erro) throw new Error('CEP não encontrado');
+    // Preencher campos editáveis
+    document.getElementById('e1-rua').value    = d.logradouro || '';
+    document.getElementById('e1-bairro').value = d.bairro     || '';
+    document.getElementById('e1-cidade').value = d.localidade || '';
+    document.getElementById('e1-uf').value     = d.uf         || '';
+    document.getElementById('campos-endereco').style.display = 'block';
+    document.getElementById('e1-numero')?.focus();
+  } catch {
+    document.getElementById('e1-cep-erro').classList.add('visivel');
+  } finally {
+    document.getElementById('cep-spinner').style.display = 'none';
+    verificarE1a();
+  }
+}
+
+function verificarE1a() {
+  const nome   = document.getElementById('e1-nome').value.trim();
+  const tel    = document.getElementById('e1-tel').value.replace(/\D/g,'');
+  const sexo   = document.getElementById('e1-sexo').value;
+  const ec     = document.getElementById('e1-estadocivil').value;
+  const numDoc = document.getElementById('e1-numDoc').value.trim();
+  const orgaoE = document.getElementById('e1-orgaoExp').value.trim();
+  const cep    = document.getElementById('e1-cep').value.replace(/\D/g,'');
+  const rua    = document.getElementById('e1-rua')?.value.trim();
+  const num    = document.getElementById('e1-numero')?.value.trim();
+  const bairro = document.getElementById('e1-bairro')?.value.trim();
+  const cidade = document.getElementById('e1-cidade')?.value.trim();
+  const uf     = document.getElementById('e1-uf')?.value.trim();
+  const ok = nome.length >= 5 && tel.length === 11 && sexo && ec &&
+             numDoc && orgaoE &&
+             cep.length === 8 && rua && num && bairro && cidade && uf;
+  document.getElementById('btn-e1a-avancar').disabled = !ok;
+}
+
+function avancarE1b() {
+  // Popular lista de classificação inline — sem dependência de função externa
+  var sel = document.getElementById('e1-classificacao');
+  if (sel && sel.options.length <= 1) {
+    for (var i = 1; i <= 500; i++) {
+      var opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = i + 'o lugar';
+      sel.appendChild(opt);
+    }
+  }
+  mostrarTela('tela-etapa1b');
+  verificarE1b();
+}
+
+// ========================================
+// ETAPA 1B — DADOS DO CONCURSO
+// ========================================
+function verificarOutros() {
+  const val = document.getElementById('e1-prefeitura').value;
+  document.getElementById('campo-outros-prefeitura').style.display =
+    val === 'Outros' ? 'block' : 'none';
+  verificarE1b();
+}
+
+function verificarE1b() {
+  const numDoc  = document.getElementById('e1-numDoc').value.trim();
+  const orgaoE  = document.getElementById('e1-orgaoExp').value.trim();
+  const pref    = document.getElementById('e1-prefeitura').value;
+  const outros  = document.getElementById('e1-outros-prefeitura').value.trim();
+  const cargo   = document.getElementById('e1-cargo').value.trim();
+  const classif = document.getElementById('e1-classificacao').value;
+  const salario = document.getElementById('e1-salario').value.trim();
+  const prefOk  = pref && (pref !== 'Outros' || outros.length > 2);
+  const ok = numDoc && orgaoE && prefOk && cargo.length >= 2 && classif && salario.length > 0;
+  document.getElementById('btn-e1b-salvar').disabled = !ok;
+}
+
+// Listeners dinâmicos para verificarE1b
+['e1-numDoc','e1-orgaoExp','e1-cargo','e1-outros-prefeitura','e1-classificacao','e1-salario'].forEach(id => {
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', verificarE1b);
+    if (el && el.tagName === 'SELECT') el.addEventListener('change', verificarE1b);
+  }, 100);
+});
+
+// Listeners para verificarE1a
+['e1-nome','e1-numero'].forEach(id => {
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', verificarE1a);
+  }, 100);
+});
+
+async function salvarEtapa1() {
+  const prefeitura = document.getElementById('e1-prefeitura').value;
+  const concurso   = prefeitura === 'Outros'
+    ? document.getElementById('e1-outros-prefeitura').value.trim().toUpperCase()
+    : prefeitura;
+
+  const dados = {
+    cpf:          estado.cpf,
+    nome:         document.getElementById('e1-nome').value.trim(),
+    telefone:     document.getElementById('e1-tel').value,
+    sexo:         document.getElementById('e1-sexo').value,
+    estadoCivil:  document.getElementById('e1-estadocivil').value,
+    cep:          document.getElementById('e1-cep').value,
+    rua:          document.getElementById('e1-rua').value.trim(),
+    numero:       document.getElementById('e1-numero').value.trim(),
+    complemento:  document.getElementById('e1-complemento').value.trim(),
+    bairro:       document.getElementById('e1-bairro').value.trim(),
+    cidade:       document.getElementById('e1-cidade').value.trim(),
+    uf:           document.getElementById('e1-uf').value.trim(),
+    tipoDoc:      document.getElementById('e1-tipoDoc').value,
+    numDoc:       document.getElementById('e1-numDoc').value.trim(),
+    orgaoExp:     document.getElementById('e1-orgaoExp').value.trim(),
+    concurso,
+    cargo:        document.getElementById('e1-cargo').value.trim(),
+    classificacao:document.getElementById('e1-classificacao').value,
+    salario:      document.getElementById('e1-salario').value.trim(),
+    etapa:        '1',
+  };
+
+  const btn = document.getElementById('btn-e1b-salvar');
+  btn.innerHTML = '<span class="spinner"></span>Salvando...';
+  btn.disabled = true;
+
+  try {
+    await chamarAPI('salvarEtapa', dados);
+    // Atualizar estado local
+    if (!estado.cliente) estado.cliente = { etapas: {} };
+    estado.cliente.etapas['1'] = 'concluido';
+    estado.cliente.nome = dados.nome;
+    estado.nome = dados.nome;
+    toast('✅ Etapa 1 salva com sucesso!');
+    renderizarPainel();
+    setTimeout(() => mostrarTela('tela-painel'), 800);
+  } catch(e) {
+    toast('⚠️ Erro ao salvar. Tente novamente.');
+    btn.innerHTML = '💾 Salvar e Continuar →';
+    btn.disabled = false;
+  }
+}
+
+// ========================================
+// NAVEGAÇÃO
+// ========================================
+function voltarInicio() {
+  mostrarTela('tela-inicio');
+}
+
+// Init
+window._iniciarAcessoReal = _iniciarAcessoReal;
+mostrarTela('tela-inicio');
+dbg('Sistema iniciado - v22', 'ok');
+
+} catch(e) {
+  dbg('ERRO ao carregar script: ' + e.message + ' (linha ' + (e.lineNumber || e.line || '?') + ')', 'erro');
+  console.error('Script error:', e);
+}
+
+// Garantir que botao de avancar funciona
+document.addEventListener('DOMContentLoaded', function() {
+  dbg('DOMContentLoaded', 'ok');
+  const btn = document.getElementById('btn-e1a-avancar');
+  if (btn) btn.addEventListener('click', function() {
+    if (!btn.disabled) avancarE1b();
+  });
+});
+
+
+
+// ========================================
+// CHAMADA API (Apps Script)
+// ========================================
+async function chamarAPI(acao, dados) {
+  if (API_URL === 'SUA_URL_APPS_SCRIPT_AQUI') {
+    return simularAPI(acao, dados);
+  }
+  try {
+    const payload = JSON.stringify({ acao, ...dados });
+    const res = await fetch(API_URL, {
+      method:   'POST',
+      redirect: 'follow',
+      body:     payload,
+    });
+    const text = await res.text();
+    return JSON.parse(text);
+  } catch(e) {
+    console.error('chamarAPI erro:', e);
+    throw e;
+  }
+}
+
+// Simulação para desenvolvimento
+function simularAPI(acao, dados) {
+  return new Promise(resolve => setTimeout(() => {
+    if (acao === 'verificarCPF') {
+      // Simular: CPF 000.000.000-00 como existente para teste
+      resolve({ existe: false });
+    } else if (acao === 'enviarSenha') {
+      console.log('📩 Senha simulada:', dados.senha);
+      resolve({ ok: true });
+    } else if (acao === 'criarCliente') {
+      resolve({ ok: true });
+    } else if (acao === 'carregarCliente') {
+      resolve({ nome: 'CLIENTE TESTE', etapas: {} });
+    } else if (acao === 'salvarEtapa') {
+      console.log('💾 Etapa salva:', dados);
+      resolve({ ok: true });
+    } else if (acao === 'uploadDoc') {
+      console.log('📎 Doc simulado:', dados.docId, dados.nome);
+      resolve({ ok: true });
+    } else if (acao === 'gerarEEnviarParaAssinatura') {
+      console.log('✍️ Gerando docs para assinatura:', dados.docs);
+      resolve({
+        linkAssinatura: 'https://autentique.com.br/simulacao',
+        docIds: dados.docs.map((d,i) => `sim-id-${i}`),
+      });
+    } else if (acao === 'verificarAssinatura') {
+      console.log('🔍 Verificando assinatura:', dados.docIds);
+      resolve({ todosAssinados: true }); // simula sucesso
+    } else {
+      resolve({ ok: true });
+    }
+  }, 800));
+}
+
+// ========================================
+</script>
+
+<div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
+  Essa Vaga É Minha — v23 · Adriano Aquino Advocacia
+</div>
+
+<!-- BOTÃO DE DEBUG — remover em produção -->
+<button onclick="var p=document.getElementById('debug-panel');p.style.display=p.style.display==='none'?'block':'none';"
+  style="position:fixed;bottom:40px;right:10px;z-index:9998;background:#112240;border:1px solid #c9a84c;color:#c9a84c;font-size:0.65rem;padding:4px 8px;border-radius:6px;cursor:pointer;opacity:0.7;">
+  🛠 DBG
+</button>
+
+<!-- PAINEL DE DEBUG -->
+<div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0a1628;border-top:2px solid #c9a84c;z-index:9999;max-height:40vh;overflow:hidden;font-family:monospace;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#112240;">
+    <span style="color:#c9a84c;font-size:0.72rem;font-weight:700;">DEBUG v12</span>
+    <div style="display:flex;gap:8px;">
+      <button onclick="document.getElementById('debug-box').innerHTML=''" style="background:none;border:1px solid #444;color:#888;font-size:0.65rem;padding:2px 8px;border-radius:4px;cursor:pointer;">Limpar</button>
+      <button onclick="document.getElementById('debug-panel').style.display='none'" style="background:none;border:1px solid #444;color:#888;font-size:0.65rem;padding:2px 8px;border-radius:4px;cursor:pointer;">Fechar</button>
+    </div>
+  </div>
+  <div id="debug-box" style="padding:8px 12px;overflow-y:auto;max-height:calc(40vh - 32px);"></div>
+</div>
+
+</body>
+</html>
