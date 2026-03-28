@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Essa Vaga É Minha — Adriano Aquino</title>
 <meta name="description" content="Cadastro para ação judicial de nomeação em concurso público — Adriano Aquino Advocacia">
 <meta name="theme-color" content="#0a1628">
@@ -502,6 +505,30 @@ body::before {
   .app { align-items: stretch; }
 }
 </style>
+
+<!-- FUNÇÕES CRÍTICAS em script separado — garantem disponibilidade antes do HTML -->
+<script>
+var DEBUG_ATIVO = true;
+
+function dbg(msg, tipo) {
+  if (!DEBUG_ATIVO) return;
+  try {
+    var box = document.getElementById('debug-box');
+    if (!box) return;
+    var cor = tipo === 'erro' ? '#e05252' : tipo === 'ok' ? '#4caf82' : '#e8c97a';
+    var linha = document.createElement('div');
+    linha.style.cssText = 'font-size:0.7rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:' + cor;
+    linha.textContent = new Date().toLocaleTimeString('pt-BR') + ' — ' + msg;
+    box.insertBefore(linha, box.firstChild);
+  } catch(e) {}
+  console.log('[DBG]', msg);
+}
+
+function abrirDebug() {
+  var p = document.getElementById('debug-panel');
+  if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+</script>
 </head>
 <body>
 <div class="app">
@@ -547,11 +574,53 @@ body::before {
         <div class="campo-erro" id="cpf-erro">CPF inválido. Verifique e tente novamente.</div>
       </div>
 
-      <button class="btn btn-primario" id="btn-continuar" onclick="iniciarAcesso()" disabled>
+      <button class="btn btn-primario" id="btn-continuar" onclick="dbg('Botao clicado'); if(typeof iniciarAcesso==='function'){iniciarAcesso();}else{dbg('ERRO: iniciarAcesso nao definida','erro');}" disabled>
         Continuar →
       </button>
     </div>
   </div>
+
+  <!-- Script ISOLADO para tela de início — carrega antes do script principal -->
+  <script>
+  function validarCPFNum(cpf) {
+    var n = cpf.replace(/\D/g,'');
+    if (n.length !== 11 || /^(\d)\1+$/.test(n)) return false;
+    var s = 0, r, i;
+    for (i = 0; i < 9; i++) s += parseInt(n[i]) * (10 - i);
+    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+    if (r !== parseInt(n[9])) return false;
+    s = 0;
+    for (i = 0; i < 10; i++) s += parseInt(n[i]) * (11 - i);
+    r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
+    return r === parseInt(n[10]);
+  }
+  function formatarCPF(input) {
+    var v = input.value.replace(/\D/g,'').substring(0,11);
+    if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');
+    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');
+    else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/,'$1.$2');
+    input.value = v;
+    var aceito = document.getElementById('aceite-check').classList.contains('marcado');
+    var cpfOk  = validarCPFNum(v);
+    document.getElementById('btn-continuar').disabled = !(aceito && cpfOk);
+    var erro = document.getElementById('cpf-erro');
+    erro.classList.remove('visivel');
+    input.classList.remove('erro','ok');
+    if (v.replace(/\D/g,'').length === 11) {
+      if (cpfOk) input.classList.add('ok');
+      else { input.classList.add('erro'); erro.classList.add('visivel'); }
+    }
+  }
+  function toggleAceite() {
+    var chk    = document.getElementById('aceite-check');
+    var marcado = chk.classList.toggle('marcado');
+    chk.textContent      = marcado ? '✓' : '';
+    chk.style.background = marcado ? '#c9a84c' : 'transparent';
+    chk.style.color      = marcado ? '#0a1628' : '';
+    var cpfOk = validarCPFNum(document.getElementById('cpf-input').value);
+    document.getElementById('btn-continuar').disabled = !(marcado && cpfOk);
+  }
+  </script>
 
   <!-- ══════════════════════════════════════
        TELA 2A — NOVO CLIENTE: EMAIL
@@ -559,8 +628,8 @@ body::before {
   <div class="tela" id="tela-novo-email">
     <div class="card-central">
       <div class="card-icon">✉️</div>
-      <div class="card-titulo">Primeiro acesso</div>
-      <div class="card-sub">Não encontramos seu CPF em nosso sistema. Informe seu email para recebermos sua senha de acesso.</div>
+      <div class="card-titulo" id="titulo-novo-email">Primeiro acesso</div>
+      <div class="card-sub" id="sub-novo-email">Nao encontramos seu CPF em nosso sistema. Informe seu email para receber sua senha de acesso.</div>
 
       <div class="cpf-display" id="cpf-display-novo"></div>
 
@@ -568,11 +637,11 @@ body::before {
         <label>Email</label>
         <input type="email" id="email-novo" placeholder="seuemail@exemplo.com"
           oninput="validarEmail(this)" inputmode="email" autocomplete="email" />
-        <div class="campo-erro" id="email-novo-erro">Email inválido.</div>
+        <div class="campo-erro" id="email-novo-erro">Email invalido.</div>
       </div>
 
-      <div class="info-box aviso">
-        📩 Você receberá uma senha de 6 dígitos neste email para acessar e continuar seu cadastro quando quiser.
+      <div class="info-box aviso" id="info-novo-email">
+        Voce recebera uma senha de 6 digitos neste email para acessar e continuar seu cadastro quando quiser.
       </div>
 
       <button class="btn btn-primario" id="btn-enviar-senha" onclick="enviarSenhaNovo()" disabled>
@@ -728,7 +797,7 @@ body::before {
         <div class="check-item bloqueado" id="chk-4" onclick="irParaEtapa(4)">
           <div class="check-icone bloqueado" id="chk-4-icone">4</div>
           <div class="check-info">
-            <div class="check-nome">Assinatura digital</div>
+            <div class="check-nome">Envio dos Documentos Assinados</div>
             <div class="check-status" id="chk-4-status">Aguardando etapas anteriores</div>
           </div>
         </div>      </div>
@@ -1020,6 +1089,13 @@ body::before {
       <div class="campo-erro" id="e1-class-erro">Selecione sua classificação.</div>
     </div>
 
+    <div class="campo">
+      <label>Salário previsto no edital</label>
+      <input type="text" id="e1-salario" placeholder="Ex: R$ 2.500,00"
+        oninput="formatarMoedaInput(this); verificarE1b();" inputmode="decimal" />
+      <div class="campo-erro" id="e1-salario-erro">Informe o salário previsto no edital.</div>
+    </div>
+
     <button class="btn btn-primario" id="btn-e1b-salvar" onclick="salvarEtapa1()" disabled>
       💾 Salvar e Continuar →
     </button>
@@ -1238,6 +1314,10 @@ body::before {
     <div class="card-titulo">Documentos</div>
     <div class="card-sub">Envie cada documento no campo correspondente. Você pode continuar depois — seu progresso é salvo.</div>
 
+    <div class="lgpd-box" style="margin-bottom:16px;padding:12px 14px;">
+      📄 <strong>Atenção:</strong> Todos os arquivos devem estar no formato <strong>PDF</strong>. Outros formatos não serão aceitos.
+    </div>
+
     <div id="lista-docs-etapa3"></div>
 
     <button class="btn btn-primario" id="btn-concluir-docs" onclick="concluirEtapa3()" disabled style="margin-top:8px;">
@@ -1280,41 +1360,59 @@ body::before {
 <!-- ══════════════════════════════════════
      TELA 13 — ETAPA 4: ASSINATURA
 ══════════════════════════════════════ -->
+<!-- ══════════════════════════════════════
+     TELA — CONFIRMAÇÃO ETAPA 3
+══════════════════════════════════════ -->
+<div class="tela" id="tela-confirmacao-etapa3">
+  <div class="card-central" style="margin-top:24px;text-align:center;">
+    <div style="font-size:3.5rem;margin-bottom:16px;">📬</div>
+    <div class="card-titulo" style="text-align:center;">Documentos Recebidos!</div>
+    <div class="card-sub" style="text-align:center;margin-bottom:24px;">
+      Todos os seus documentos foram enviados com sucesso e estão sendo processados pelo escritório.
+    </div>
+    <div class="lgpd-box" style="text-align:left;margin-bottom:24px;">
+      <strong style="color:var(--dourado);">O que acontece agora?</strong><br><br>
+      Em instantes você receberá um <strong>email</strong> com os documentos que precisarão ser
+      <strong>assinados digitalmente pelo Gov.br</strong>. São eles:<br><br>
+      • Contrato de Prestação de Serviços Jurídicos<br>
+      • Procuração<br>
+      • Declarações (se aplicável)<br><br>
+      Após assinar pelo Gov.br, volte aqui para enviar os documentos assinados.
+    </div>
+    <button class="btn btn-primario" onclick="irParaEtapa(4)">
+      Já assinei, enviar documentos →
+    </button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">Voltar ao painel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TELA 13 — ETAPA 4: ENVIO DE DOCS ASSINADOS
+══════════════════════════════════════ -->
 <div class="tela" id="tela-etapa4">
   <div class="progresso-bar">
     <div class="prog-steps">
       <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Dados</div></div>
       <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Financeiro</div></div>
       <div class="prog-step feito"><div class="prog-bolinha">✓</div><div class="prog-label">Documentos</div></div>
-      <div class="prog-step ativa"><div class="prog-bolinha">4</div><div class="prog-label">Assinatura</div></div>
+      <div class="prog-step ativa"><div class="prog-bolinha">4</div><div class="prog-label">Assinados</div></div>
     </div>
   </div>
   <div class="card-central" style="margin-top:12px;">
-    <div class="card-icon">✍️</div>
-    <div class="card-titulo">Assinatura Digital</div>
-    <div class="card-sub">Seus documentos foram preparados. Assine tudo de uma vez usando sua conta Gov.br — rápido e com validade jurídica.</div>
+    <div class="card-icon">📝</div>
+    <div class="card-titulo">Envio dos Documentos Assinados</div>
+    <div class="card-sub">Envie aqui os documentos que você recebeu por email e assinou digitalmente pelo Gov.br.</div>
 
-    <div class="info-box aviso" style="margin-bottom:20px;">
-      💡 Você será redirecionado para a plataforma Autentique, onde assinará com sua conta Gov.br. Após assinar, retorne aqui para confirmar.
+    <div class="lgpd-box" style="margin-bottom:20px;">
+      💡 Abra o email que recebeu do Autentique, assine cada documento com sua conta Gov.br e depois envie os arquivos assinados abaixo. Apenas arquivos PDF.
     </div>
 
-    <!-- Lista de documentos a assinar -->
-    <div style="font-size:0.7rem;font-weight:700;color:var(--dourado);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">Documentos para assinar</div>
-    <div id="lista-docs-assinar" style="margin-bottom:20px;"></div>
+    <div id="lista-docs-assinados" style="margin-bottom:20px;"></div>
 
-    <!-- Status -->
-    <div id="assinatura-status-box" style="display:none;border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;text-align:center;">
-      <div id="assinatura-status-icon" style="font-size:2rem;margin-bottom:6px;"></div>
-      <div id="assinatura-status-msg" style="font-size:0.85rem;font-weight:600;"></div>
-    </div>
-
-    <button class="btn btn-primario" id="btn-assinar" onclick="abrirAssinatura()">
-      ✍️ Assinar documentos via Gov.br →
+    <button class="btn btn-primario" id="btn-concluir-assinados" onclick="concluirEtapa4()" disabled>
+      Concluir e finalizar processo →
     </button>
-    <button class="btn btn-secundario" id="btn-verificar-assinatura" onclick="verificarAssinatura()" style="display:none;">
-      🔄 Verificar status da assinatura
-    </button>
-    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')" style="margin-top:6px;">← Voltar ao painel</button>
+    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar ao painel</button>
   </div>
 </div>
 
@@ -1323,26 +1421,31 @@ body::before {
 ══════════════════════════════════════ -->
 <div class="tela" id="tela-concluido">
   <div class="card-central" style="margin-top:24px;text-align:center;">
-    <div style="font-size:4rem;margin-bottom:16px;">🎉</div>
-    <div class="card-titulo" style="text-align:center;">Processo Concluído!</div>
+    <div style="font-size:4rem;margin-bottom:16px;">⚖️</div>
+    <div class="card-titulo" style="text-align:center;">Sua vaga é sua!</div>
     <div class="card-sub" style="text-align:center;margin-bottom:24px;">
-      Todos os documentos foram assinados e enviados com sucesso. O escritório Adriano Aquino entrará em contato com os próximos passos.
+      Parabéns! Você concluiu todo o processo com sucesso.
     </div>
-
-    <div style="background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.25);border-radius:var(--radius);padding:16px;margin-bottom:24px;">
-      <div style="font-size:0.72rem;color:#a8d5be;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Resumo</div>
-      <div id="resumo-concluido" style="font-size:0.82rem;color:var(--branco);line-height:2;"></div>
+    <div class="lgpd-box" style="text-align:left;margin-bottom:24px;">
+      <strong style="color:var(--dourado);">O que acontece agora?</strong><br><br>
+      Todos os seus documentos e declarações foram recebidos e estão em mãos do escritório
+      <strong>Adriano Aquino Advocacia</strong>.<br><br>
+      Nossa equipe analisará tudo com cuidado e entrará em contato para os próximos passos
+      da sua ação de nomeação.<br><br>
+      <strong>Você fez sua parte — agora é com a gente! 💪</strong>
     </div>
-
     <div class="info-box aviso">
-      📱 Guarde este número de protocolo: <strong id="num-protocolo" style="font-family:'Syne',sans-serif;color:var(--dourado-l);"></strong>
+      📱 Fique atento ao seu email e WhatsApp. Em breve entraremos em contato.
     </div>
   </div>
 </div>
 
 <script>
+// Script principal
+dbg('Script principal iniciando...', 'ok');
+
 // ========================================
-// CONFIGURAÇÃO — Substitua pela URL do Apps Script
+// CONFIGURAÇÃO
 // ========================================
 const API_URL = 'https://script.google.com/macros/s/AKfycbw-UsazPQKg2yMOXfaBIjOXdrjtGqDaGY62AeI6LmYJj2sBBhadagf1bYAoo6BdEYUx/exec';
 
@@ -1359,15 +1462,22 @@ let estado = {
 };
 
 // ========================================
+// CPF e ACEITE — definidos em script isolado acima
+// ========================================
+
+
+
+// ========================================
 // UTILITÁRIOS
 // ========================================
 function mostrarTela(id) {
+  dbg('mostrarTela: ' + id);
   document.querySelectorAll('.tela').forEach(t => {
     t.classList.remove('ativa');
     t.style.display = 'none';
   });
   const tela = document.getElementById(id);
-  if (!tela) { console.error('Tela nao encontrada:', id); return; }
+  if (!tela) { dbg('ERRO: tela nao encontrada: ' + id, 'erro'); return; }
   tela.style.display = 'flex';
   setTimeout(() => tela.classList.add('ativa'), 10);
   window.scrollTo(0, 0);
@@ -1390,50 +1500,8 @@ function formatarCPFTexto(cpf) {
 }
 
 // ========================================
-// CPF
+// INICIAR ACESSO
 // ========================================
-function formatarCPF(input) {
-  let v = input.value.replace(/\D/g,'').substring(0,11);
-  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4');
-  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3');
-  else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/,'$1.$2');
-  input.value = v;
-  const aceito = document.getElementById('aceite-check').classList.contains('marcado');
-  document.getElementById('btn-continuar').disabled = !(aceito && validarCPFNum(v));
-  document.getElementById('cpf-erro').classList.remove('visivel');
-  input.classList.remove('erro','ok');
-  if (v.replace(/\D/g,'').length === 11) {
-    if (validarCPFNum(v)) input.classList.add('ok');
-    else { input.classList.add('erro'); document.getElementById('cpf-erro').classList.add('visivel'); }
-  }
-}
-
-function validarCPFNum(cpf) {
-  const n = cpf.replace(/\D/g,'');
-  if (n.length !== 11 || /^(\d)\1+$/.test(n)) return false;
-  let s = 0;
-  for (let i = 0; i < 9; i++) s += parseInt(n[i]) * (10 - i);
-  let r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
-  if (r !== parseInt(n[9])) return false;
-  s = 0;
-  for (let i = 0; i < 10; i++) s += parseInt(n[i]) * (11 - i);
-  r = (s * 10) % 11; if (r === 10 || r === 11) r = 0;
-  return r === parseInt(n[10]);
-}
-
-// ========================================
-// ACEITE LGPD
-// ========================================
-function toggleAceite() {
-  const chk = document.getElementById('aceite-check');
-  const marcado = chk.classList.toggle('marcado');
-  chk.textContent = marcado ? '✓' : '';
-  chk.style.background = marcado ? 'var(--dourado)' : 'transparent';
-  chk.style.color = marcado ? 'var(--azul)' : '';
-  const cpfOk = validarCPFNum(document.getElementById('cpf-input').value);
-  document.getElementById('btn-continuar').disabled = !(marcado && cpfOk);
-}
-
 // ========================================
 // INICIAR ACESSO
 // ========================================
@@ -1447,33 +1515,27 @@ async function iniciarAcesso() {
   btn.disabled = true;
 
   try {
-    // Verificar se CPF já existe
     const res = await chamarAPI('verificarCPF', { cpf });
     if (res.existe) {
-      // Cliente existente — pedir senha
+      // CPF cadastrado — guardar email cadastrado e mostrar tela de senha
+      // NAO enviar email automaticamente — cliente pode ter a senha guardada
       estado.email = res.email;
       estado.nome  = res.nome;
+      // Buscar senha atual do backend para validar o que o cliente digitar
+      const resSenha = await chamarAPI('buscarSenha', { cpf });
+      estado.senhaGerada = resSenha?.senha || '';
       document.getElementById('cpf-display-existente').textContent = formatarCPFTexto(cpf);
       document.getElementById('msg-bem-vindo').textContent =
-        `${res.nome ? 'Olá, ' + res.nome.split(' ')[0] + '! ' : ''}Digite a senha enviada para ${mascararEmail(res.email)}.`;
-      // Enviar senha — backend reusa a existente
-      const senha = gerarSenha6();
-      const resEnvio = await chamarAPI('enviarSenha', { cpf, email: res.email, senha, nome: res.nome, tipo: 'retorno' });
-      // Usar a senha que o backend retornou (pode ser a existente)
-      estado.senhaGerada = resEnvio?.senha || senha;
-      // Modo desenvolvimento: mostrar código na tela
-      if (API_URL === 'SUA_URL_APPS_SCRIPT_AQUI') {
-        document.getElementById('dev-codigo-exist').style.display = 'block';
-        document.getElementById('dev-codigo-exist-valor').textContent = senha;
-      }
+        (res.nome ? 'Ola, ' + res.nome.split(' ')[0] + '! ' : '') +
+        'Digite sua senha de acesso. Se nao lembrar, clique em Reenviar senha.';
       mostrarTela('tela-existente-senha');
     } else {
-      // Novo cliente — pedir email
+      // CPF novo — pedir email
       document.getElementById('cpf-display-novo').textContent = formatarCPFTexto(cpf);
       mostrarTela('tela-novo-email');
     }
   } catch(e) {
-    toast('⚠️ Erro de conexão. Tente novamente.');
+    toast('Erro de conexao. Tente novamente.');
   } finally {
     btn.innerHTML = 'Continuar →';
     btn.disabled = false;
@@ -1500,41 +1562,39 @@ function validarEmail(input) {
 async function enviarSenhaNovo() {
   const email = document.getElementById('email-novo').value.trim().toLowerCase();
   estado.email = email;
-  const senha = gerarSenha6();
-  estado.senhaGerada = senha;
 
   const btn = document.getElementById('btn-enviar-senha');
   btn.innerHTML = '<span class="spinner"></span>Enviando...';
   btn.disabled = true;
 
   try {
-    await chamarAPI('enviarSenha', { cpf: estado.cpf, email, senha, tipo: 'novo' });
+    // Se CPF ja existe mas email errado, o backend envia alerta para email correto
+    // e este email digitado e tratado como novo cadastro
+    const senha = gerarSenha6();
+    const res = await chamarAPI('enviarSenha', { cpf: estado.cpf, email, senha, tipo: 'novo' });
+    estado.senhaGerada = res?.senha || senha;
     document.getElementById('email-enviado').textContent = email;
-    // Modo desenvolvimento: mostrar código na tela
-    if (API_URL === 'SUA_URL_APPS_SCRIPT_AQUI') {
-      document.getElementById('dev-codigo-novo').style.display = 'block';
-      document.getElementById('dev-codigo-novo-valor').textContent = senha;
-    }
     mostrarTela('tela-confirmar-senha');
-    toast('📩 Senha enviada! Verifique seu email.');
     setTimeout(() => document.querySelectorAll('.cod-novo')[0]?.focus(), 300);
   } catch(e) {
-    toast('⚠️ Erro ao enviar email. Tente novamente.');
+    toast('Erro ao enviar email. Tente novamente.');
     btn.innerHTML = 'Enviar senha por email →';
     btn.disabled = false;
   }
 }
 
 async function reenviarSenhaNovo() {
-  const senha = gerarSenha6();
-  estado.senhaGerada = senha;
   try {
-    await chamarAPI('enviarSenha', { cpf: estado.cpf, email: estado.email, senha, tipo: 'novo' });
-    toast('📩 Nova senha enviada!');
+    const res = await chamarAPI('enviarSenha', {
+      cpf: estado.cpf, email: estado.email,
+      senha: estado.senhaGerada, tipo: 'novo'
+    });
+    estado.senhaGerada = res?.senha || estado.senhaGerada;
+    toast('Senha reenviada para o seu email!');
     document.querySelectorAll('.cod-novo').forEach(i => i.value = '');
     document.querySelectorAll('.cod-novo')[0]?.focus();
     document.getElementById('btn-verificar-novo').disabled = true;
-  } catch(e) { toast('⚠️ Erro ao reenviar. Tente novamente.'); }
+  } catch(e) { toast('Erro ao reenviar. Tente novamente.'); }
 }
 
 // ========================================
@@ -1580,15 +1640,18 @@ async function verificarSenhaNovo() {
 }
 
 async function reenviarSenha() {
-  const senha = gerarSenha6();
-  estado.senhaGerada = senha;
+  // Reenviar a MESMA senha cadastrada — nao gera nova
   try {
-    await chamarAPI('enviarSenha', { cpf: estado.cpf, email: estado.email, senha, nome: estado.nome, tipo: 'retorno' });
-    toast('📩 Nova senha enviada!');
+    const res = await chamarAPI('enviarSenha', {
+      cpf: estado.cpf, email: estado.email,
+      senha: estado.senhaGerada, nome: estado.nome, tipo: 'retorno'
+    });
+    estado.senhaGerada = res?.senha || estado.senhaGerada;
+    toast('Senha reenviada para o seu email!');
     document.querySelectorAll('.cod').forEach(i => i.value = '');
     document.querySelectorAll('.cod')[0]?.focus();
     document.getElementById('btn-verificar').disabled = true;
-  } catch(e) { toast('⚠️ Erro ao reenviar. Tente novamente.'); }
+  } catch(e) { toast('Erro ao reenviar. Tente novamente.'); }
 }
 
 // ========================================
@@ -1597,22 +1660,45 @@ async function reenviarSenha() {
 async function entrarNoPainel(tipo) {
   try {
     if (tipo === 'novo') {
-      // Criar cliente no backend
       await chamarAPI('criarCliente', { cpf: estado.cpf, email: estado.email });
       estado.cliente = { etapas: {}, nome: '' };
     } else {
-      // Carregar dados do cliente
+      // Carregar dados do cliente — preencher campos com dados ja existentes
       const dados = await chamarAPI('carregarCliente', { cpf: estado.cpf });
-      estado.cliente = dados;
-      estado.nome = dados.nome || '';
+      estado.cliente        = dados;
+      estado.nome           = dados.nome || '';
+      estado.situacaoTrabalho = dados.situacaoTrabalho || '';
+      estado.pedirJG        = dados.pedirJG === 'Sim';
+
+      // Pre-preencher campos da Etapa 1 se ja foram salvos
+      if (dados.nome) {
+        setTimeout(() => {
+          const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+          set('e1-nome', dados.nome);
+          set('e1-tel',  dados.telefone);
+          set('e1-cep',  dados.cep);
+          set('e1-rua',  dados.rua);
+          set('e1-numero', dados.numero);
+          set('e1-complemento', dados.complemento);
+          set('e1-bairro', dados.bairro);
+          set('e1-cidade', dados.cidade);
+          set('e1-numDoc', dados.numDoc);
+          set('e1-orgaoExp', dados.orgaoExp);
+          set('e1-cargo', dados.cargo);
+          set('e1-salario', dados.salario);
+          if (dados.sexo) {
+            set('e1-sexo', dados.sexo);
+            atualizarEstadoCivil();
+            setTimeout(() => set('e1-estadocivil', dados.estadoCivil), 100);
+          }
+        }, 300);
+      }
+      await chamarAPI('notificarRetorno', { cpf: estado.cpf, nome: estado.nome });
     }
     renderizarPainel();
     mostrarTela('tela-painel');
-    if (tipo === 'retorno') {
-      await chamarAPI('notificarRetorno', { cpf: estado.cpf, nome: estado.nome });
-    }
   } catch(e) {
-    toast('⚠️ Erro ao acessar. Tente novamente.');
+    toast('Erro ao acessar. Tente novamente.');
   }
 }
 
@@ -1651,7 +1737,7 @@ function renderizarPainel() {
     btn.textContent = '✅ Processo concluído!';
     btn.disabled = true;
   } else if (e3) {
-    btn.textContent = 'Ir para Assinatura →';
+    btn.textContent = 'Ir para Envio de Docs Assinados →';
     document.getElementById('prog-4').classList.add('ativa');
   } else if (e2) {
     btn.textContent = 'Ir para Documentos →';
@@ -1773,165 +1859,100 @@ function irParaEtapa4() {
   mostrarTela('tela-etapa4');
 }
 
-function montarDocsAssinatura() {
+// Docs que o cliente deve enviar assinados
+function montarDocsAssinados() {
   const docs = [];
-  // Sempre
-  docs.push({ id: 'doc00', num: 'Doc 00', nome: 'Contrato de Prestação de Serviços Advocatícios' });
-  docs.push({ id: 'doc03', num: 'Doc 03', nome: 'Procuração Ad Judicia' });
-  // Condicional
+  docs.push({ id: 'assinado-doc00', nome: 'Doc 00 - Contrato de Prestação de Serviços Jurídicos (assinado)' });
+  docs.push({ id: 'assinado-doc03', nome: 'Doc 03 - Procuração (assinada)' });
   if (estado.pedirJG) {
-    docs.push({ id: 'doc05', num: 'Doc 05', nome: 'Declaração de Hipossuficiência Econômica' });
+    docs.push({ id: 'assinado-doc05', nome: 'Doc 05 - Declaração de Hipossuficiência (assinada)' });
   }
-  // Se não declarou todos os 3 anos de IR
   const naoDeclarou = [2025,2024,2023].some(a => declarouIR[a] === false);
-  if (naoDeclarou || !estado.pedirJG) {
-    // Sem JG sempre gera isenção (não sabemos IR)
-    docs.push({ id: 'doc06b', num: 'Doc 06b', nome: 'Declaração de Isenção de Imposto de Renda' });
+  if (naoDeclarou) {
+    docs.push({ id: 'assinado-doc06a', nome: 'Doc 06a - Declaração de Isenção de IR (assinada)' });
   }
   return docs;
 }
 
-function renderizarEtapa4() {
-  documentosAssinatura = montarDocsAssinatura();
-  const jaAssinados = estado.cliente?.assinaturas || {};
+// Docs enviados assinados (etapa 4)
+let docsAssinados = {};
 
-  const lista = document.getElementById('lista-docs-assinar');
+function renderizarEtapa4() {
+  const docs = montarDocsAssinados();
+  const lista = document.getElementById('lista-docs-assinados');
   if (!lista) return;
 
-  lista.innerHTML = documentosAssinatura.map(doc => {
-    const assinado = jaAssinados[doc.id];
-    return `
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;
-      background:rgba(255,255,255,0.03);border:1px solid ${assinado?'rgba(76,175,130,0.3)':'rgba(255,255,255,0.07)'};
-      border-radius:10px;margin-bottom:8px;">
-      <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-        background:${assinado?'rgba(76,175,130,0.15)':'rgba(201,168,76,0.1)'};
-        color:${assinado?'var(--ok)':'var(--dourado)'};font-size:0.8rem;font-weight:700;">
-        ${assinado ? '✓' : doc.num.replace('Doc ','')}
-      </div>
-      <div style="flex:1;">
-        <div style="font-size:0.82rem;font-weight:600;color:${assinado?'var(--ok)':'var(--branco)'};">${doc.nome}</div>
-        <div style="font-size:0.68rem;color:var(--cinza);margin-top:1px;">${doc.num}</div>
-      </div>
-      <div style="font-size:0.72rem;font-weight:700;color:${assinado?'var(--ok)':'var(--cinza)'};">
-        ${assinado ? 'Assinado' : 'Pendente'}
-      </div>
-    </div>`;
-  }).join('');
+  const totalEnviados = docs.filter(d => docsAssinados[d.id]).length;
+  const pct = docs.length > 0 ? Math.round((totalEnviados / docs.length) * 100) : 0;
+
+  lista.innerHTML = '<div style="margin-bottom:16px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+      '<span style="font-size:0.72rem;color:var(--cinza);">Documentos enviados</span>' +
+      '<span style="font-size:0.78rem;font-weight:700;color:' + (pct===100?'var(--ok)':'var(--dourado)') + ';">' + totalEnviados + '/' + docs.length + '</span>' +
+    '</div>' +
+    '<div style="height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">' +
+      '<div style="height:100%;width:' + pct + '%;background:' + (pct===100?'var(--ok)':'var(--dourado)') + ';transition:width 0.4s;border-radius:4px;"></div>' +
+    '</div></div>' +
+    docs.map(function(doc) {
+      var env = docsAssinados[doc.id];
+      return '<div class="doc-upload-item ' + (env ? 'enviado' : 'pendente-obrig') + '">' +
+        '<div class="doc-nome">' + doc.nome + '</div>' +
+        '<div class="doc-desc">Apenas arquivos PDF</div>' +
+        '<div class="doc-status ' + (env ? (env.status==='enviando'?'pend':env.status==='erro'?'erro':'ok') : 'pend') + '">' +
+          (env ? (env.status==='enviando' ? '<span class="spinner"></span> Enviando...' : env.status==='erro' ? 'Erro — tente novamente' : '✅ ' + env.nome) : '⏳ Pendente') +
+        '</div>' +
+        '<label class="btn-upload" for="upload-ass-' + doc.id + '">' + (env ? 'Substituir' : 'Selecionar PDF') + '</label>' +
+        '<input type="file" id="upload-ass-' + doc.id + '" accept=".pdf" style="display:none;" onchange="receberDocAssinado('' + doc.id + '', this)" />' +
+      '</div>';
+    }).join('');
+
+  document.getElementById('btn-concluir-assinados').disabled = pct < 100;
 }
 
-async function abrirAssinatura() {
-  const btn = document.getElementById('btn-assinar');
-  btn.innerHTML = '<span class="spinner"></span>Preparando documentos...';
-  btn.disabled = true;
-
+async function receberDocAssinado(docId, input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+    toast('Apenas arquivos PDF são aceitos!');
+    input.value = '';
+    return;
+  }
+  if (file.size > 9 * 1024 * 1024) { toast('Arquivo muito grande. Máximo 9MB.'); return; }
+  docsAssinados[docId] = { nome: file.name, arquivo: file, status: 'enviando' };
+  renderizarEtapa4();
   try {
-    // Gerar documentos via API backend e obter link do Autentique
-    const res = await chamarAPI('gerarEEnviarParaAssinatura', {
-      cpf: estado.cpf,
-      docs: documentosAssinatura.map(d => d.id),
+    var base64 = await lerArquivoBase64(file);
+    await chamarAPI('uploadDoc', {
+      cpf: estado.cpf, docId: docId,
+      nome: file.name.endsWith('.pdf') ? file.name : file.name + '.pdf',
+      conteudoBase64: base64,
     });
-
-    if (res.linkAssinatura) {
-      // Mostrar botão de verificação
-      document.getElementById('btn-verificar-assinatura').style.display = 'block';
-      // Mostrar status
-      mostrarStatusAssinatura('aguardando');
-      // Abrir link em nova aba
-      window.open(res.linkAssinatura, '_blank');
-      btn.textContent = '↗️ Abrir link novamente';
-      btn.disabled = false;
-      btn.onclick = () => window.open(res.linkAssinatura, '_blank');
-      // Salvar IDs para verificação
-      autentiqueDocIds = res.docIds || [];
-    } else {
-      throw new Error('Link não gerado');
-    }
+    docsAssinados[docId].status = 'enviado';
+    toast(file.name + ' enviado!');
   } catch(e) {
-    toast('⚠️ Erro ao gerar documentos. Tente novamente.');
-    btn.innerHTML = '✍️ Assinar documentos via Gov.br →';
-    btn.disabled = false;
+    docsAssinados[docId].status = 'erro';
+    toast('Erro ao enviar. Tente novamente.');
   }
+  renderizarEtapa4();
 }
 
-async function verificarAssinatura() {
-  const btn = document.getElementById('btn-verificar-assinatura');
-  btn.innerHTML = '<span class="spinner"></span>Verificando...';
+async function concluirEtapa4() {
+  var btn = document.getElementById('btn-concluir-assinados');
+  btn.innerHTML = '<span class="spinner"></span>Concluindo...';
   btn.disabled = true;
-
   try {
-    const res = await chamarAPI('verificarAssinatura', {
-      cpf: estado.cpf,
-      docIds: autentiqueDocIds,
-    });
-
-    if (res.todosAssinados) {
-      mostrarStatusAssinatura('concluido');
-      await chamarAPI('salvarEtapa', { cpf: estado.cpf, etapa: '4', status: 'assinado' });
-      if (!estado.cliente) estado.cliente = { etapas: {} };
-      estado.cliente.etapas['4'] = 'concluido';
-      setTimeout(() => mostrarConcluido(), 1500);
-    } else if (res.parcialmenteAssinado) {
-      mostrarStatusAssinatura('parcial');
-      btn.innerHTML = '🔄 Verificar status da assinatura';
-      btn.disabled = false;
-    } else {
-      mostrarStatusAssinatura('aguardando');
-      btn.innerHTML = '🔄 Verificar status da assinatura';
-      btn.disabled = false;
-    }
-  } catch {
-    toast('⚠️ Erro ao verificar. Tente novamente.');
-    btn.innerHTML = '🔄 Verificar status da assinatura';
+    await chamarAPI('salvarEtapa', { cpf: estado.cpf, etapa: '4' });
+    if (!estado.cliente) estado.cliente = { etapas: {} };
+    estado.cliente.etapas['4'] = 'concluido';
+    mostrarConcluido();
+  } catch(e) {
+    toast('Erro ao concluir. Tente novamente.');
+    btn.innerHTML = 'Concluir e finalizar processo →';
     btn.disabled = false;
   }
-}
-
-function mostrarStatusAssinatura(status) {
-  const box  = document.getElementById('assinatura-status-box');
-  const icon = document.getElementById('assinatura-status-icon');
-  const msg  = document.getElementById('assinatura-status-msg');
-  box.style.display = 'block';
-
-  const configs = {
-    aguardando: {
-      bg: 'rgba(201,168,76,0.08)', border: 'var(--borda)',
-      icon: '⏳', color: 'var(--dourado)',
-      text: 'Aguardando assinatura — após assinar, clique em "Verificar status"',
-    },
-    parcial: {
-      bg: 'rgba(201,168,76,0.08)', border: 'var(--borda)',
-      icon: '📝', color: 'var(--dourado)',
-      text: 'Alguns documentos assinados — continue para finalizar todos',
-    },
-    concluido: {
-      bg: 'rgba(76,175,130,0.08)', border: 'rgba(76,175,130,0.3)',
-      icon: '✅', color: 'var(--ok)',
-      text: 'Todos os documentos assinados com sucesso!',
-    },
-  };
-
-  const c = configs[status];
-  box.style.background = c.bg;
-  box.style.border = `1px solid ${c.border}`;
-  box.style.borderRadius = 'var(--radius)';
-  icon.textContent = c.icon;
-  msg.textContent  = c.text;
-  msg.style.color  = c.color;
 }
 
 function mostrarConcluido() {
-  // Montar resumo
-  const naoDeclarouAnos = [2025,2024,2023].filter(a => declarouIR[a] === false);
-  document.getElementById('resumo-concluido').innerHTML = `
-    <div>📋 <strong>Concurso:</strong> ${estado.cliente?.concurso || '—'}</div>
-    <div>👤 <strong>Cargo:</strong> ${estado.cliente?.cargo || '—'}</div>
-    <div>📝 <strong>Documentos assinados:</strong> ${documentosAssinatura.length}</div>
-    <div>📁 <strong>Arquivos enviados:</strong> ${Object.keys(docsEnviados).length}</div>
-    ${naoDeclarouAnos.length ? `<div>🧾 <strong>Dec. de Isenção IR:</strong> anos ${naoDeclarouAnos.join(', ')}</div>` : ''}
-  `;
-  document.getElementById('num-protocolo').textContent =
-    `EVE-${estado.cpf.slice(-4)}-${Date.now().toString().slice(-6)}`;
   renderizarPainel();
   mostrarTela('tela-concluido');
 }
@@ -1985,8 +2006,7 @@ function renderListaRendas() {
           style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--branco);font-family:'DM Sans',sans-serif;margin-bottom:6px;" />
         <input type="tel" class="renda-val" placeholder="R$ 0,00" inputmode="decimal"
           value="${r.valor}"
-          oninput="rendas[${i}].valor=this.value;atualizarTotais()"
-          onfocus="if(!this.value)this.value='R$ '"
+          oninput="formatarMoedaInput(this);rendas[${i}].valor=this.value;atualizarTotais()"
           style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--ok);font-family:'DM Sans',sans-serif;font-weight:600;" />
       </div>
       ${rendas.length > 1 ? `<button onclick="removerRenda(${i})" style="background:rgba(224,82,82,0.15);border:none;color:var(--erro);border-radius:8px;padding:8px 10px;cursor:pointer;margin-top:2px;flex-shrink:0;">✕</button>` : ''}
@@ -2021,8 +2041,7 @@ function renderListaDespesas() {
           style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--branco);font-family:'DM Sans',sans-serif;margin-bottom:6px;" />
         <input type="tel" class="desp-val" placeholder="R$ 0,00" inputmode="decimal"
           value="${d.valor}"
-          oninput="despesas[${i}].valor=this.value;atualizarTotais()"
-          onfocus="if(!this.value)this.value='R$ '"
+          oninput="formatarMoedaInput(this);despesas[${i}].valor=this.value;atualizarTotais()"
           style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 14px;font-size:0.88rem;color:var(--erro);font-family:'DM Sans',sans-serif;font-weight:600;" />
       </div>
       ${despesas.length > 1 ? `<button onclick="removerDespesa(${i})" style="background:rgba(224,82,82,0.15);border:none;color:var(--erro);border-radius:8px;padding:8px 10px;cursor:pointer;margin-top:2px;flex-shrink:0;">✕</button>` : ''}
@@ -2059,9 +2078,12 @@ function atualizarTotais() {
   const tdv = document.getElementById('total-despesas-valor');
   if (tdv) tdv.textContent = formatMoeda(totalD);
 
-  // Botões
-  const rendaOk = rendas.length > 0 && rendas.every(r => r.descricao.trim() && parseMoeda(r.valor) > 0);
-  const despOk  = despesas.length > 0 && despesas.every(d => d.descricao.trim() && parseMoeda(d.valor) > 0);
+  // Botões — aceitar R$ 0,00 se situação for sem vínculo
+  const semVinculo = estado.situacaoTrabalho === 'sem_vinculo' || estado.situacaoTrabalho === 'sem_vinculo_comprovado';
+  const rendaOk = rendas.length > 0 && rendas.every(function(r) {
+    return r.descricao.trim() && (semVinculo ? parseMoeda(r.valor) >= 0 : parseMoeda(r.valor) > 0);
+  });
+  const despOk  = despesas.length > 0 && despesas.every(function(d) { return d.descricao.trim() && parseMoeda(d.valor) >= 0; });
   const btnD = document.getElementById('btn-ir-despesas');
   const btnT = document.getElementById('btn-ver-tabela');
   if (btnD) btnD.disabled = !rendaOk;
@@ -2210,6 +2232,20 @@ function verificarIRCompleto() {
 function confirmarIR() {
   renderizarEtapa3();
   mostrarTela('tela-etapa3');
+
+  // Gerar Doc 06a em background se houver anos sem declarar
+  const naoDeclarou = Object.entries(declarouIR).filter(([,v]) => v === false).map(([a]) => a);
+  if (naoDeclarou.length > 0) {
+    const anosDeclarados = Object.entries(declarouIR)
+      .filter(([,v]) => v === true).map(([a]) => a).join(', ');
+    chamarAPI('salvarEtapa', {
+      cpf: estado.cpf,
+      etapa: '3',
+      declarouIR,
+      docsEnviados: Object.keys(docsEnviados),
+      apenasGerarDoc06a: true,
+    }).catch(e => console.log('Erro gerando doc06a:', e));
+  }
 }
 
 function montarListaDocs() {
@@ -2306,13 +2342,20 @@ function renderizarEtapa3() {
       <div class="doc-upload-item ${env ? 'enviado' : 'pendente-obrig'}">
         <div class="doc-nome">${doc.nome}</div>
         <div class="doc-desc">${doc.desc}</div>
-        <div class="doc-status ${env ? 'ok' : 'pend'}">
-          ${env ? `✅ ${env.nome}` : '⏳ Pendente'}
+        <div class="doc-status ${env ? (env.status === 'enviando' ? 'pend' : env.status === 'erro' ? 'erro' : 'ok') : 'pend'}">
+          ${env
+            ? env.status === 'enviando'
+              ? '<span class="spinner"></span> Enviando...'
+              : env.status === 'erro'
+                ? '⚠️ Erro — toque para reenviar'
+                : '✅ ' + env.nome
+            : '⏳ Pendente'}
         </div>
         <label class="btn-upload" for="upload-${doc.id}">
           ${env ? '🔄 Substituir' : '📎 Selecionar arquivo'}
         </label>
-        <input type="file" id="upload-${doc.id}" accept=".pdf,.jpg,.jpeg,.png"
+        <div style="font-size:0.65rem;color:var(--cinza);margin-top:4px;">Apenas arquivos PDF</div>
+        <input type="file" id="upload-${doc.id}" accept=".pdf"
           style="display:none;" onchange="receberArquivo('${doc.id}', this)" />
       </div>`;
     }).join('')}`;
@@ -2320,23 +2363,95 @@ function renderizarEtapa3() {
   document.getElementById('btn-concluir-docs').disabled = pct < 100;
 }
 
-function receberArquivo(docId, input) {
+function lerArquivoBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = e => resolve(e.target.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// IDs que pertencem ao Doc 06b
+function ehDoc06b(docId) {
+  return docId === 'doc-trabalho' ||
+         docId.startsWith('renda-') ||
+         docId.startsWith('despesa-') ||
+         docId.startsWith('ir-');
+}
+
+// Nome padronizado para envio ao Drive
+function nomeArquivoPadronizado(docId, nomeOriginal) {
+  if (docId === 'doc01') return 'Doc 01 - Documento de Identificação.pdf';
+  if (docId === 'doc02') return 'Doc 02 - Comprovante de Residência.pdf';
+  if (ehDoc06b(docId))   return 'Doc 06b - ' + nomeOriginal;
+  return nomeOriginal.endsWith('.pdf') ? nomeOriginal : nomeOriginal + '.pdf';
+}
+
+async function receberArquivo(docId, input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 10 * 1024 * 1024) { toast('⚠️ Máximo 10MB por arquivo.'); return; }
-  docsEnviados[docId] = { nome: file.name, arquivo: file };
-  toast(`✅ ${file.name} selecionado!`);
+  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+    toast('Apenas arquivos PDF são aceitos!');
+    input.value = '';
+    return;
+  }
+  if (file.size > 9 * 1024 * 1024) { toast('Arquivo muito grande. Máximo 9MB.'); return; }
+
+  const nomeNaPasta = nomeArquivoPadronizado(docId, file.name);
+
+  // Marcar como enviando
+  docsEnviados[docId] = { nome: file.name, nomePasta: nomeNaPasta, arquivo: file, status: 'enviando' };
+  renderizarEtapa3();
+
+  // Fazer upload imediatamente em background
+  try {
+    const base64 = await lerArquivoBase64(file);
+    await chamarAPI('uploadDoc', {
+      cpf:           estado.cpf,
+      docId,
+      nome:          nomeNaPasta,
+      nomeOriginal:  file.name,
+      conteudoBase64: base64,
+    });
+    docsEnviados[docId].status = 'enviado';
+    toast(nomeNaPasta + ' enviado!');
+  } catch(e) {
+    docsEnviados[docId].status = 'erro';
+    toast('Erro ao enviar ' + file.name + '. Tente novamente.');
+  }
   renderizarEtapa3();
 }
 
 async function concluirEtapa3() {
+  // Verificar se algum ainda está enviando
+  const enviando = Object.values(docsEnviados).filter(d => d.status === 'enviando');
+  if (enviando.length > 0) {
+    toast('Aguarde, ainda há arquivos sendo enviados...');
+    return;
+  }
+
+  // Reenviar os que deram erro
+  const comErro = Object.entries(docsEnviados).filter(([,d]) => d.status === 'erro');
+  for (const [id, doc] of comErro) {
+    try {
+      const base64 = await lerArquivoBase64(doc.arquivo);
+      await chamarAPI('uploadDoc', {
+        cpf: estado.cpf, docId: id,
+        nome: doc.nomePasta, nomeOriginal: doc.nome,
+        conteudoBase64: base64,
+      });
+      docsEnviados[id].status = 'enviado';
+    } catch(e) {
+      toast('Erro ao enviar ' + doc.nome + '. Tente novamente.');
+      return;
+    }
+  }
+
   const btn = document.getElementById('btn-concluir-docs');
-  btn.innerHTML = '<span class="spinner"></span>Enviando arquivos...';
+  btn.innerHTML = '<span class="spinner"></span>Concluindo...';
   btn.disabled = true;
   try {
-    for (const [id, doc] of Object.entries(docsEnviados)) {
-      await chamarAPI('uploadDoc', { cpf: estado.cpf, docId: id, nome: doc.nome });
-    }
     await chamarAPI('salvarEtapa', {
       cpf: estado.cpf, etapa: '3',
       declarouIR,
@@ -2344,12 +2459,10 @@ async function concluirEtapa3() {
     });
     if (!estado.cliente) estado.cliente = { etapas: {} };
     estado.cliente.etapas['3'] = 'concluido';
-    toast('✅ Documentos enviados com sucesso!');
-    renderizarPainel();
-    setTimeout(() => mostrarTela('tela-painel'), 800);
+    mostrarTela('tela-confirmacao-etapa3');
   } catch {
-    toast('⚠️ Erro ao enviar. Tente novamente.');
-    btn.innerHTML = '✅ Concluir envio de documentos →';
+    toast('Erro ao concluir. Tente novamente.');
+    btn.innerHTML = 'Concluir envio de documentos →';
     btn.disabled = false;
   }
 }
@@ -2376,6 +2489,13 @@ function atualizarEstadoCivil() {
     sel.innerHTML = '<option value="">Selecione o sexo primeiro...</option>';
   }
   verificarE1a();
+}
+
+function formatarMoedaInput(input) {
+  var v = input.value.replace(/\D/g, '');
+  if (!v) { input.value = ''; return; }
+  v = (parseInt(v) / 100).toFixed(2);
+  input.value = 'R$ ' + v.replace('.', ',').replace(/(\d)(?=(\d{3})+,)/g, '$1.');
 }
 
 function formatarTel(input) {
@@ -2438,23 +2558,18 @@ function verificarE1a() {
 }
 
 function avancarE1b() {
-  try {
-    // Popular classificação antes de mostrar a tela
-    const sel = document.getElementById('e1-classificacao');
-    if (sel && sel.options.length <= 1) {
-      for (let i = 1; i <= 500; i++) {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = i + 'o lugar';
-        sel.appendChild(opt);
-      }
+  // Popular lista de classificação inline — sem dependência de função externa
+  var sel = document.getElementById('e1-classificacao');
+  if (sel && sel.options.length <= 1) {
+    for (var i = 1; i <= 500; i++) {
+      var opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = i + 'o lugar';
+      sel.appendChild(opt);
     }
-    mostrarTela('tela-etapa1b');
-    verificarE1b();
-  } catch(e) {
-    console.error('avancarE1b erro:', e);
-    toast('Erro: ' + e.message);
   }
+  mostrarTela('tela-etapa1b');
+  verificarE1b();
 }
 
 // ========================================
@@ -2474,13 +2589,14 @@ function verificarE1b() {
   const outros  = document.getElementById('e1-outros-prefeitura').value.trim();
   const cargo   = document.getElementById('e1-cargo').value.trim();
   const classif = document.getElementById('e1-classificacao').value;
+  const salario = document.getElementById('e1-salario').value.trim();
   const prefOk  = pref && (pref !== 'Outros' || outros.length > 2);
-  const ok = numDoc && orgaoE && prefOk && cargo.length >= 2 && classif;
+  const ok = numDoc && orgaoE && prefOk && cargo.length >= 2 && classif && salario.length > 0;
   document.getElementById('btn-e1b-salvar').disabled = !ok;
 }
 
 // Listeners dinâmicos para verificarE1b
-['e1-numDoc','e1-orgaoExp','e1-cargo','e1-outros-prefeitura','e1-classificacao'].forEach(id => {
+['e1-numDoc','e1-orgaoExp','e1-cargo','e1-outros-prefeitura','e1-classificacao','e1-salario'].forEach(id => {
   setTimeout(() => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', verificarE1b);
@@ -2521,6 +2637,7 @@ async function salvarEtapa1() {
     concurso,
     cargo:        document.getElementById('e1-cargo').value.trim(),
     classificacao:document.getElementById('e1-classificacao').value,
+    salario:      document.getElementById('e1-salario').value.trim(),
     etapa:        '1',
   };
 
@@ -2550,27 +2667,22 @@ async function salvarEtapa1() {
 // ========================================
 function voltarInicio() {
   mostrarTela('tela-inicio');
+}
 
-// Garantir que botão de avançar funciona
+// Init
+mostrarTela('tela-inicio');
+dbg('Sistema iniciado - v13', 'ok');
+
+// Garantir que botao de avancar funciona
 document.addEventListener('DOMContentLoaded', function() {
+  dbg('DOMContentLoaded', 'ok');
   const btn = document.getElementById('btn-e1a-avancar');
   if (btn) btn.addEventListener('click', function() {
     if (!btn.disabled) avancarE1b();
   });
 });
 
-// Popular lista de classificação
-function popularClassificacao() {
-  const sel = document.getElementById('e1-classificacao');
-  if (!sel || sel.options.length > 1) return;
-  for (let i = 1; i <= 500; i++) {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = i + 'º lugar';
-    sel.appendChild(opt);
-  }
-}
-}
+
 
 // ========================================
 // CHAMADA API (Apps Script)
@@ -2631,8 +2743,26 @@ function simularAPI(acao, dados) {
 // ========================================
 </script>
 
-<div style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;">
-  Essa Vaga É Minha — v9 · Adriano Aquino Advocacia
+<div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
+  Essa Vaga É Minha — v19 · Adriano Aquino Advocacia
+</div>
+
+<!-- BOTÃO DE DEBUG — remover em produção -->
+<button onclick="var p=document.getElementById('debug-panel');p.style.display=p.style.display==='none'?'block':'none';"
+  style="position:fixed;bottom:40px;right:10px;z-index:9998;background:#112240;border:1px solid #c9a84c;color:#c9a84c;font-size:0.65rem;padding:4px 8px;border-radius:6px;cursor:pointer;opacity:0.7;">
+  🛠 DBG
+</button>
+
+<!-- PAINEL DE DEBUG -->
+<div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0a1628;border-top:2px solid #c9a84c;z-index:9999;max-height:40vh;overflow:hidden;font-family:monospace;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#112240;">
+    <span style="color:#c9a84c;font-size:0.72rem;font-weight:700;">DEBUG v12</span>
+    <div style="display:flex;gap:8px;">
+      <button onclick="document.getElementById('debug-box').innerHTML=''" style="background:none;border:1px solid #444;color:#888;font-size:0.65rem;padding:2px 8px;border-radius:4px;cursor:pointer;">Limpar</button>
+      <button onclick="document.getElementById('debug-panel').style.display='none'" style="background:none;border:1px solid #444;color:#888;font-size:0.65rem;padding:2px 8px;border-radius:4px;cursor:pointer;">Fechar</button>
+    </div>
+  </div>
+  <div id="debug-box" style="padding:8px 12px;overflow-y:auto;max-height:calc(40vh - 32px);"></div>
 </div>
 
 </body>
