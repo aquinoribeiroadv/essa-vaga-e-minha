@@ -1458,6 +1458,8 @@ window.onerror = function(msg, src, line, col, err) {
   return false;
 };
 
+try {
+
 // ========================================
 // CONFIGURAÇÃO
 // ========================================
@@ -2690,7 +2692,12 @@ function voltarInicio() {
 // Init
 window._iniciarAcessoReal = _iniciarAcessoReal;
 mostrarTela('tela-inicio');
-dbg('Sistema iniciado - v21', 'ok');
+dbg('Sistema iniciado - v22', 'ok');
+
+} catch(e) {
+  dbg('ERRO ao carregar script: ' + e.message + ' (linha ' + (e.lineNumber || e.line || '?') + ')', 'erro');
+  console.error('Script error:', e);
+}
 
 // Garantir que botao de avancar funciona
 document.addEventListener('DOMContentLoaded', function() {
@@ -2763,7 +2770,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v21 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v22 · Adriano Aquino Advocacia
 </div>
 
 <!-- BOTÃO DE DEBUG — remover em produção -->
