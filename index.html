@@ -1442,7 +1442,10 @@ function abrirDebug() {
 
 <script>
 // Script principal
-dbg('Script principal iniciando...', 'ok');
+window.onerror = function(msg, src, line, col, err) {
+  dbg('ERRO GLOBAL linha ' + line + ': ' + msg, 'erro');
+  return false;
+};
 
 // ========================================
 // CONFIGURAÇÃO
@@ -1672,24 +1675,28 @@ async function entrarNoPainel(tipo) {
 
       // Pre-preencher campos da Etapa 1 se ja foram salvos
       if (dados.nome) {
-        setTimeout(() => {
-          const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
-          set('e1-nome', dados.nome);
-          set('e1-tel',  dados.telefone);
-          set('e1-cep',  dados.cep);
-          set('e1-rua',  dados.rua);
-          set('e1-numero', dados.numero);
-          set('e1-complemento', dados.complemento);
-          set('e1-bairro', dados.bairro);
-          set('e1-cidade', dados.cidade);
-          set('e1-numDoc', dados.numDoc);
-          set('e1-orgaoExp', dados.orgaoExp);
-          set('e1-cargo', dados.cargo);
-          set('e1-salario', dados.salario);
-          if (dados.sexo) {
-            set('e1-sexo', dados.sexo);
+        var dadosCarregados = dados;
+        setTimeout(function() {
+          function setVal(id, val) {
+            var el = document.getElementById(id);
+            if (el && val) el.value = val;
+          }
+          setVal('e1-nome', dadosCarregados.nome);
+          setVal('e1-tel',  dadosCarregados.telefone);
+          setVal('e1-cep',  dadosCarregados.cep);
+          setVal('e1-rua',  dadosCarregados.rua);
+          setVal('e1-numero', dadosCarregados.numero);
+          setVal('e1-complemento', dadosCarregados.complemento);
+          setVal('e1-bairro', dadosCarregados.bairro);
+          setVal('e1-cidade', dadosCarregados.cidade);
+          setVal('e1-numDoc', dadosCarregados.numDoc);
+          setVal('e1-orgaoExp', dadosCarregados.orgaoExp);
+          setVal('e1-cargo', dadosCarregados.cargo);
+          setVal('e1-salario', dadosCarregados.salario);
+          if (dadosCarregados.sexo) {
+            setVal('e1-sexo', dadosCarregados.sexo);
             atualizarEstadoCivil();
-            setTimeout(() => set('e1-estadocivil', dados.estadoCivil), 100);
+            setTimeout(function() { setVal('e1-estadocivil', dadosCarregados.estadoCivil); }, 150);
           }
         }, 300);
       }
@@ -2744,7 +2751,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v19 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v20 · Adriano Aquino Advocacia
 </div>
 
 <!-- BOTÃO DE DEBUG — remover em produção -->
