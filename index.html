@@ -504,6 +504,23 @@ body::before {
   .header { max-width: 480px; margin: 0 auto; padding: 24px 0 16px; }
   .app { align-items: stretch; }
 }
+@media (min-width: 768px) {
+  .card-central { max-width: 620px; padding: 36px 40px; border-radius: 24px; }
+  .progresso-bar { max-width: 620px; }
+  .header { max-width: 620px; }
+  .card-titulo { font-size: 1.75rem; }
+  .card-sub { font-size: 0.92rem; }
+  .btn { font-size: 0.97rem; padding: 16px 20px; }
+  .input-field { font-size: 0.97rem; padding: 14px 16px; }
+  .lgpd-box { font-size: 0.85rem; padding: 20px; }
+}
+@media (min-width: 1024px) {
+  .card-central { max-width: 720px; padding: 44px 52px; }
+  .progresso-bar { max-width: 720px; }
+  .header { max-width: 720px; }
+  .card-titulo { font-size: 2rem; }
+  .card-icon { width: 60px; height: 60px; font-size: 1.7rem; margin-bottom: 24px; }
+}
 </style>
 
 <!-- FUNÇÕES CRÍTICAS em script separado — garantem disponibilidade antes do HTML -->
@@ -1010,7 +1027,7 @@ function iniciarAcesso() {
     <button class="btn btn-primario" id="btn-e1a-avancar" onclick="avancarE1b()" disabled>
       Continuar → Dados do Concurso
     </button>
-    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar</button>
+    <button class="btn btn-secundario" onclick="voltarAoPainel()">← Voltar</button>
   </div>
 </div>
 
@@ -1214,7 +1231,7 @@ function iniciarAcesso() {
       </button>
     </div>
 
-    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar ao painel</button>
+    <button class="btn btn-secundario" onclick="voltarAoPainel()">← Voltar ao painel</button>
   </div>
 </div>
 
@@ -1249,7 +1266,7 @@ function iniciarAcesso() {
     <button class="btn btn-secundario" onclick="responderJG(false)">
       Não, seguir sem o benefício →
     </button>
-    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')" style="margin-top:6px;">← Voltar ao painel</button>
+    <button class="btn btn-secundario" onclick="voltarAoPainel()" style="margin-top:6px;">← Voltar ao painel</button>
   </div>
 </div>
 
@@ -1396,7 +1413,7 @@ function iniciarAcesso() {
     <button class="btn btn-primario" id="btn-concluir-docs" onclick="concluirEtapa3()" disabled style="margin-top:8px;">
       ✅ Concluir envio de documentos →
     </button>
-    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar ao painel</button>
+    <button class="btn btn-secundario" onclick="voltarAoPainel()">← Voltar ao painel</button>
   </div>
 </div>
 
@@ -1450,7 +1467,7 @@ function iniciarAcesso() {
       Quando receber o email, volte aqui e acesse a <strong>Etapa 4</strong> para enviar
       os documentos assinados.
     </div>
-    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">Voltar ao painel</button>
+    <button class="btn btn-secundario" onclick="voltarAoPainel()">Voltar ao painel</button>
   </div>
 </div>
 
@@ -1480,7 +1497,7 @@ function iniciarAcesso() {
     <button class="btn btn-primario" id="btn-concluir-assinados" onclick="concluirEtapa4()" disabled>
       Concluir e finalizar processo →
     </button>
-    <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">← Voltar ao painel</button>
+    <button class="btn btn-secundario" onclick="voltarAoPainel()">← Voltar ao painel</button>
   </div>
 </div>
 
@@ -1701,7 +1718,15 @@ async function verificarSenha() {
     toast('❌ Senha incorreta. Verifique e tente novamente.');
     return;
   }
-  await entrarNoPainel('retorno');
+  const btn = document.getElementById('btn-verificar');
+  btn.innerHTML = '<span class="spinner"></span>Entrando...';
+  btn.disabled = true;
+  try {
+    await entrarNoPainel('retorno');
+  } finally {
+    btn.innerHTML = 'Entrar →';
+    btn.disabled = false;
+  }
 }
 
 async function verificarSenhaNovo() {
@@ -1710,7 +1735,15 @@ async function verificarSenhaNovo() {
     toast('❌ Senha incorreta. Verifique e tente novamente.');
     return;
   }
-  await entrarNoPainel('novo');
+  const btn = document.getElementById('btn-verificar-novo');
+  btn.innerHTML = '<span class="spinner"></span>Entrando...';
+  btn.disabled = true;
+  try {
+    await entrarNoPainel('novo');
+  } finally {
+    btn.innerHTML = 'Entrar →';
+    btn.disabled = false;
+  }
 }
 
 async function reenviarSenha() {
@@ -2304,6 +2337,8 @@ async function salvarEtapa2() {
 }
 
 async function salvarEtapa2Simples() {
+  const btn = document.getElementById('btn-continuar-etapa');
+  if (btn) { btn.innerHTML = '<span class="spinner"></span>Salvando...'; btn.disabled = true; }
   try {
     await chamarAPI('salvarEtapa', { cpf: estado.cpf, etapa: '2', situacaoTrabalho: estado.situacaoTrabalho || '', pedirJG: false });
     if (!estado.cliente) estado.cliente = { etapas: {} };
@@ -2311,9 +2346,18 @@ async function salvarEtapa2Simples() {
     toast('✅ Etapa 2 salva!');
     renderizarPainel();
     setTimeout(() => mostrarTela('tela-painel'), 800);
-  } catch {
-    toast('⚠️ Erro ao salvar. Tente novamente.');
+  } catch(e) {
+    dbg('Falha em salvarEtapa2Simples', 'erro', { msg: e.message });
+    toast('⚠️ Erro ao salvar. Veja o Debug para detalhes.');
+  } finally {
+    if (btn) { btn.innerHTML = 'Continuar →'; btn.disabled = false; }
   }
+}
+
+// Voltar ao painel sempre re-renderiza o estado atual
+function voltarAoPainel() {
+  renderizarPainel();
+  mostrarTela('tela-painel');
 }
 
 // ========================================
@@ -2596,6 +2640,7 @@ async function concluirEtapa3() {
     });
     if (!estado.cliente) estado.cliente = { etapas: {} };
     estado.cliente.etapas['3'] = 'concluido';
+    renderizarPainel();
     mostrarTela('tela-confirmacao-etapa3');
   } catch(e) {
     dbg('Falha ao concluir etapa 3', 'erro', { nome: e.name, msg: e.message });
@@ -2930,7 +2975,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v26 Alpha v2 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — Beta v1 · Adriano Aquino Advocacia
 </div>
 
 <!-- PAINEL DE DEBUG — acessível clicando no rodapé -->
