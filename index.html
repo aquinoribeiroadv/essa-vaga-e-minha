@@ -1744,10 +1744,49 @@ async function entrarNoPainel(tipo) {
     } else {
       // Carregar dados do cliente — preencher campos com dados ja existentes
       const dados = await chamarAPI('carregarCliente', { cpf: estado.cpf });
-      estado.cliente        = dados;
-      estado.nome           = dados.nome || '';
+      estado.cliente          = dados;
+      estado.nome             = dados.nome || '';
       estado.situacaoTrabalho = dados.situacaoTrabalho || '';
-      estado.pedirJG        = dados.pedirJG === 'Sim';
+      estado.pedirJG          = dados.pedirJG === 'Sim';
+      estado.anosIR           = dados.anosIR  || '';
+
+      // Restaurar declarouIR a partir dos anos salvos no backend (Problema 3)
+      const anosIRStr = String(dados.anosIR || '');
+      if (anosIRStr && anosIRStr !== '') {
+        if (anosIRStr === 'Nenhum') {
+          declarouIR = { 2025: false, 2024: false, 2023: false };
+        } else {
+          const declarados = anosIRStr.split(',').map(function(a) { return parseInt(a.trim()); }).filter(Boolean);
+          [2025, 2024, 2023].forEach(function(ano) { declarouIR[ano] = declarados.includes(ano); });
+        }
+      }
+
+      // Restaurar estado de docs enviados a partir da pasta do Drive (Problema 2)
+      docsEnviados  = {};
+      docsAssinados = {};
+      var etapas = dados.etapas || {};
+      var pasta  = dados.docsNaPasta || [];
+
+      // Etapa 3 completa → todos os docs obrigatórios foram enviados
+      if (etapas['3'] === 'concluido') {
+        docsEnviados['doc01']       = { nome: 'Doc 01 - Documento de Identificação.pdf', status: 'enviado' };
+        docsEnviados['doc02']       = { nome: 'Doc 02 - Comprovante de Residência.pdf',  status: 'enviado' };
+        docsEnviados['doc-trabalho']= { nome: 'Doc 06b - Situação de Vínculo.pdf',        status: 'enviado' };
+      }
+
+      // Docs assinados já na pasta (etapa 4 em andamento ou completa)
+      pasta.forEach(function(nomeArq) {
+        if (nomeArq.startsWith('Doc 00') && nomeArq.includes('assinado'))
+          docsAssinados['assinado-doc00']  = { nome: nomeArq, status: 'enviado' };
+        if (nomeArq.startsWith('Doc 03') && nomeArq.includes('assinada'))
+          docsAssinados['assinado-doc03']  = { nome: nomeArq, status: 'enviado' };
+        if (nomeArq.startsWith('Doc 05') && nomeArq.includes('assinada'))
+          docsAssinados['assinado-doc05']  = { nome: nomeArq, status: 'enviado' };
+        if (nomeArq.startsWith('Doc 06a') && nomeArq.includes('assinada'))
+          docsAssinados['assinado-doc06a'] = { nome: nomeArq, status: 'enviado' };
+      });
+
+      dbg('Estado restaurado', 'ok', { pedirJG: estado.pedirJG, anosIR: anosIRStr, docsEnviados: Object.keys(docsEnviados), docsAssinados: Object.keys(docsAssinados) });
 
       // Pre-preencher campos da Etapa 1 se ja foram salvos
       if (dados.nome) {
@@ -1952,8 +1991,11 @@ function montarDocsAssinados() {
   if (estado.pedirJG) {
     docs.push({ id: 'assinado-doc05', nome: 'Doc 05 - Declaração de Hipossuficiência (assinada)' });
   }
-  const naoDeclarou = [2025,2024,2023].some(a => declarouIR[a] === false);
-  if (naoDeclarou) {
+  // Doc 06a: verificar tanto declarouIR da sessão quanto anosIR salvo no backend
+  const naoDeclarouSessao  = [2025,2024,2023].some(function(a) { return declarouIR[a] === false; });
+  const anosIRStr          = String(estado.anosIR || '');
+  const temIsencaoBackend  = anosIRStr !== '' && anosIRStr !== '2023, 2024, 2025';
+  if (naoDeclarouSessao || temIsencaoBackend) {
     docs.push({ id: 'assinado-doc06a', nome: 'Doc 06a - Declaração de Isenção de IR (assinada)' });
   }
   return docs;
@@ -1994,6 +2036,14 @@ function renderizarEtapa4() {
   document.getElementById('btn-concluir-assinados').disabled = pct < 100;
 }
 
+// Nomes padronizados dos docs assinados no Drive
+var NOMES_ASSINADOS = {
+  'assinado-doc00':  'Doc 00 - Contrato de Prestação de Serviços Jurídicos assinado.pdf',
+  'assinado-doc03':  'Doc 03 - Procuração assinada.pdf',
+  'assinado-doc05':  'Doc 05 - Declaração de Hipossuficiência assinada.pdf',
+  'assinado-doc06a': 'Doc 06a - Declaração de Isenção de Imposto de Renda assinada.pdf',
+};
+
 async function receberDocAssinado(docId, input) {
   var file = input.files[0];
   if (!file) return;
@@ -2003,18 +2053,23 @@ async function receberDocAssinado(docId, input) {
     return;
   }
   if (file.size > 9 * 1024 * 1024) { toast('Arquivo muito grande. Máximo 9MB.'); return; }
-  docsAssinados[docId] = { nome: file.name, arquivo: file, status: 'enviando' };
+
+  // Nome padronizado no Drive — independe do nome que o cliente usou
+  var nomeNaPasta = NOMES_ASSINADOS[docId] || (file.name.endsWith('.pdf') ? file.name : file.name + '.pdf');
+
+  docsAssinados[docId] = { nome: nomeNaPasta, arquivo: file, status: 'enviando' };
   renderizarEtapa4();
   try {
     var base64 = await lerArquivoBase64(file);
     await chamarAPI('uploadDoc', {
       cpf: estado.cpf, docId: docId,
-      nome: file.name.endsWith('.pdf') ? file.name : file.name + '.pdf',
+      nome: nomeNaPasta,
       conteudoBase64: base64,
     });
     docsAssinados[docId].status = 'enviado';
-    toast(file.name + ' enviado!');
+    toast(nomeNaPasta + ' enviado!');
   } catch(e) {
+    dbg('Erro ao enviar doc assinado ' + docId, 'erro', { msg: e.message });
     docsAssinados[docId].status = 'erro';
     toast('Erro ao enviar. Tente novamente.');
   }
@@ -2880,16 +2935,10 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v25 · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v26 Alpha · Adriano Aquino Advocacia
 </div>
 
-<!-- BOTÃO DE DEBUG -->
-<button onclick="abrirDebug()"
-  style="position:fixed;bottom:40px;right:10px;z-index:9998;background:#112240;border:1px solid #c9a84c;color:#c9a84c;font-size:0.65rem;padding:4px 8px;border-radius:6px;cursor:pointer;opacity:0.7;">
-  🛠 DBG
-</button>
-
-<!-- PAINEL DE DEBUG -->
+<!-- PAINEL DE DEBUG — acessível clicando no rodapé -->
 <div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#080e1a;border-top:2px solid #c9a84c;z-index:9999;max-height:55vh;overflow:hidden;font-family:monospace;">
 
   <!-- Barra de título -->
