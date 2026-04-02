@@ -1520,7 +1520,6 @@ window.onerror = function(msg, src, line, col, err) {
   return false;
 };
 
-try {
 
 // ========================================
 // CONFIGURAÇÃO
@@ -1530,7 +1529,7 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbyLMzOq2CBxsAIpz7iA6nxeKn
 // ========================================
 // STATE
 // ========================================
-let estado = {
+var estado = {
   cpf: '',
   email: '',
   nome: '',
@@ -2760,11 +2759,11 @@ function voltarInicio() {
 
 // Init
 window._iniciarAcessoReal = _iniciarAcessoReal;
-mostrarTela('tela-inicio');
-dbg('Sistema iniciado - v22', 'ok');
-
+try {
+  mostrarTela('tela-inicio');
+  dbg('Sistema iniciado - v25', 'ok');
 } catch(e) {
-  dbg('ERRO ao carregar script: ' + e.message + ' (linha ' + (e.lineNumber || e.line || '?') + ')', 'erro');
+  dbg('ERRO na inicialização: ' + e.message, 'erro');
   console.error('Script error:', e);
 }
 
