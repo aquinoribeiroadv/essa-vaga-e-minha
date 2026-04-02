@@ -1438,23 +1438,18 @@ function iniciarAcesso() {
 ══════════════════════════════════════ -->
 <div class="tela" id="tela-confirmacao-etapa3">
   <div class="card-central" style="margin-top:24px;text-align:center;">
-    <div style="font-size:3.5rem;margin-bottom:16px;">📬</div>
+    <div style="font-size:3.5rem;margin-bottom:16px;">✅</div>
     <div class="card-titulo" style="text-align:center;">Documentos Recebidos!</div>
     <div class="card-sub" style="text-align:center;margin-bottom:24px;">
-      Todos os seus documentos foram enviados com sucesso e estão sendo processados pelo escritório.
+      Todos os seus documentos foram enviados com sucesso e estão sendo analisados pelo escritório.
     </div>
     <div class="lgpd-box" style="text-align:left;margin-bottom:24px;">
       <strong style="color:var(--dourado);">O que acontece agora?</strong><br><br>
-      Em instantes você receberá um <strong>email</strong> com os documentos que precisarão ser
-      <strong>assinados digitalmente pelo Gov.br</strong>. São eles:<br><br>
-      • Contrato de Prestação de Serviços Jurídicos<br>
-      • Procuração<br>
-      • Declarações (se aplicável)<br><br>
-      Após assinar pelo Gov.br, volte aqui para enviar os documentos assinados.
+      O escritório irá revisar seus documentos e, em breve, você receberá um
+      <strong>email</strong> com os documentos para <strong>assinatura digital pelo Gov.br</strong>.<br><br>
+      Quando receber o email, volte aqui e acesse a <strong>Etapa 4</strong> para enviar
+      os documentos assinados.
     </div>
-    <button class="btn btn-primario" onclick="irParaEtapa(4)">
-      Já assinei, enviar documentos →
-    </button>
     <button class="btn btn-secundario" onclick="mostrarTela('tela-painel')">Voltar ao painel</button>
   </div>
 </div>
@@ -1477,7 +1472,7 @@ function iniciarAcesso() {
     <div class="card-sub">Envie aqui os documentos que você recebeu por email e assinou digitalmente pelo Gov.br.</div>
 
     <div class="lgpd-box" style="margin-bottom:20px;">
-      💡 Abra o email que recebeu do Autentique, assine cada documento com sua conta Gov.br e depois envie os arquivos assinados abaixo. Apenas arquivos PDF.
+      💡 Assine cada documento digitalmente com sua conta <strong>Gov.br</strong> e envie os arquivos assinados abaixo. Apenas arquivos PDF.
     </div>
 
     <div id="lista-docs-assinados" style="margin-bottom:20px;"></div>
@@ -2935,7 +2930,7 @@ function simularAPI(acao, dados) {
 </script>
 
 <div class="rodape" onclick="abrirDebug()" style="text-align:center;padding:16px;font-size:0.65rem;color:rgba(136,146,164,0.5);font-family:'DM Sans',sans-serif;cursor:pointer;user-select:none;">
-  Essa Vaga É Minha — v26 Alpha · Adriano Aquino Advocacia
+  Essa Vaga É Minha — v26 Alpha v2 · Adriano Aquino Advocacia
 </div>
 
 <!-- PAINEL DE DEBUG — acessível clicando no rodapé -->
