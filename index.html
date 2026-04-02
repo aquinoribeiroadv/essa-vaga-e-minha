@@ -509,19 +509,81 @@ body::before {
 <!-- FUNÇÕES CRÍTICAS em script separado — garantem disponibilidade antes do HTML -->
 <script>
 var DEBUG_ATIVO = true;
+var _dbgContador = 0;
 
-function dbg(msg, tipo) {
+function dbg(msg, tipo, detalhe) {
   if (!DEBUG_ATIVO) return;
+  _dbgContador++;
+  var nivel = tipo || 'info';
+  var cores = { erro:'#e05252', ok:'#4caf82', aviso:'#f0a500', info:'#e8c97a', api:'#7eb8f7', net:'#c07ef7' };
+  var icones = { erro:'✖', ok:'✔', aviso:'⚠', info:'·', api:'⇄', net:'⇡' };
+  var cor = cores[nivel] || '#e8c97a';
+  var ico = icones[nivel] || '·';
+
+  // Abrir painel automaticamente em erro
+  if (nivel === 'erro') {
+    var p = document.getElementById('debug-panel');
+    if (p) p.style.display = 'block';
+  }
+
   try {
     var box = document.getElementById('debug-box');
     if (!box) return;
-    var cor = tipo === 'erro' ? '#e05252' : tipo === 'ok' ? '#4caf82' : '#e8c97a';
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.06);padding:4px 0;';
+
     var linha = document.createElement('div');
-    linha.style.cssText = 'font-size:0.7rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:' + cor;
-    linha.textContent = new Date().toLocaleTimeString('pt-BR') + ' — ' + msg;
-    box.insertBefore(linha, box.firstChild);
-  } catch(e) {}
-  console.log('[DBG]', msg);
+    linha.style.cssText = 'font-size:0.7rem;color:' + cor + ';display:flex;gap:6px;align-items:baseline;';
+    var ts = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    linha.innerHTML =
+      '<span style="color:#444;min-width:58px;">' + ts + '</span>' +
+      '<span style="min-width:10px;">' + ico + '</span>' +
+      '<span style="word-break:break-all;">' + escHtml(String(msg)) + '</span>';
+    wrap.appendChild(linha);
+
+    if (detalhe) {
+      var det = document.createElement('pre');
+      det.style.cssText = 'font-size:0.62rem;color:#666;margin:2px 0 0 76px;white-space:pre-wrap;word-break:break-all;max-height:120px;overflow-y:auto;';
+      det.textContent = typeof detalhe === 'object' ? JSON.stringify(detalhe, null, 2) : String(detalhe);
+      wrap.appendChild(det);
+    }
+
+    box.insertBefore(wrap, box.firstChild);
+
+    // Atualizar contador no título
+    var titulo = document.getElementById('dbg-titulo');
+    if (titulo) titulo.textContent = 'DEBUG v25  [' + _dbgContador + ']';
+  } catch(ex) {}
+
+  var prefixos = { erro:'[ERR]', ok:'[OK]', aviso:'[AVS]', api:'[API]', net:'[NET]' };
+  console.log(prefixos[nivel] || '[DBG]', msg, detalhe || '');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function dbgEstado() {
+  dbg('Estado atual', 'info', {
+    tela:    document.querySelector('.tela.ativa') ? document.querySelector('.tela.ativa').id : '?',
+    cpf:     (window.estado && estado.cpf) ? estado.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4') : '—',
+    email:   (window.estado && estado.email) ? estado.email : '—',
+    etapa:   (window.estado && estado.etapaAtual) ? estado.etapaAtual : '—',
+    apiUrl:  typeof API_URL !== 'undefined' ? API_URL.substring(0,60)+'…' : 'não definida',
+  });
+}
+
+async function dbgPing() {
+  dbg('Iniciando ping para o Apps Script…', 'net');
+  try {
+    var t0 = Date.now();
+    var res = await fetch(API_URL, { method:'GET', redirect:'follow' });
+    var texto = await res.text();
+    var ms = Date.now() - t0;
+    dbg('Ping respondeu em ' + ms + 'ms  HTTP ' + res.status, res.ok ? 'ok' : 'aviso', texto.substring(0,400));
+  } catch(e) {
+    dbg('Ping FALHOU — ' + e.name + ': ' + e.message, 'erro', e.stack || '(sem stack)');
+  }
 }
 
 function abrirDebug() {
@@ -1551,7 +1613,8 @@ async function _iniciarAcessoReal() {
       mostrarTela('tela-novo-email');
     }
   } catch(e) {
-    toast('Erro de conexao. Tente novamente.');
+    dbg('Falha em verificarCPF/buscarSenha', 'erro', { nome: e.name, msg: e.message });
+    toast('Erro de conexao. Veja o painel Debug (🛠 DBG) para detalhes.');
   } finally {
     btn.innerHTML = 'Continuar →';
     btn.disabled = false;
@@ -1593,7 +1656,8 @@ async function enviarSenhaNovo() {
     mostrarTela('tela-confirmar-senha');
     setTimeout(() => document.querySelectorAll('.cod-novo')[0]?.focus(), 300);
   } catch(e) {
-    toast('Erro ao enviar email. Tente novamente.');
+    dbg('Falha em enviarSenha', 'erro', { nome: e.name, msg: e.message });
+    toast('Erro ao enviar email. Veja o Debug para detalhes.');
     btn.innerHTML = 'Enviar senha por email →';
     btn.disabled = false;
   }
@@ -1718,7 +1782,8 @@ async function entrarNoPainel(tipo) {
     renderizarPainel();
     mostrarTela('tela-painel');
   } catch(e) {
-    toast('Erro ao acessar. Tente novamente.');
+    dbg('Falha ao carregar cliente/entrar no painel', 'erro', { nome: e.name, msg: e.message });
+    toast('Erro ao acessar. Veja o Debug para detalhes.');
   }
 }
 
@@ -1847,8 +1912,9 @@ async function confirmarEsqueci() {
       document.getElementById('email-novo').value = email;
       toast('ℹ️ Email não encontrado neste CPF — iniciando novo cadastro.');
     }
-  } catch {
-    toast('⚠️ Erro de conexão. Tente novamente.');
+  } catch(e) {
+    dbg('Falha em esqueceuSenha', 'erro', { nome: e.name, msg: e.message });
+    toast('⚠️ Erro de conexão. Veja o Debug para detalhes.');
   } finally {
     btn.innerHTML = 'Reenviar minha senha →';
     btn.disabled  = false;
@@ -1966,7 +2032,8 @@ async function concluirEtapa4() {
     estado.cliente.etapas['4'] = 'concluido';
     mostrarConcluido();
   } catch(e) {
-    toast('Erro ao concluir. Tente novamente.');
+    dbg('Falha ao concluir etapa 4', 'erro', { nome: e.name, msg: e.message });
+    toast('Erro ao concluir. Veja o Debug para detalhes.');
     btn.innerHTML = 'Concluir e finalizar processo →';
     btn.disabled = false;
   }
@@ -2179,8 +2246,9 @@ async function salvarEtapa2() {
     toast('✅ Etapa 2 salva!');
     renderizarPainel();
     setTimeout(() => mostrarTela('tela-painel'), 800);
-  } catch {
-    toast('⚠️ Erro ao salvar. Tente novamente.');
+  } catch(e) {
+    dbg('Falha ao salvar etapa 2', 'erro', { nome: e.name, msg: e.message });
+    toast('⚠️ Erro ao salvar. Veja o Debug para detalhes.');
     btn.innerHTML = '💾 Confirmar e Salvar →';
     btn.disabled = false;
   }
@@ -2480,8 +2548,9 @@ async function concluirEtapa3() {
     if (!estado.cliente) estado.cliente = { etapas: {} };
     estado.cliente.etapas['3'] = 'concluido';
     mostrarTela('tela-confirmacao-etapa3');
-  } catch {
-    toast('Erro ao concluir. Tente novamente.');
+  } catch(e) {
+    dbg('Falha ao concluir etapa 3', 'erro', { nome: e.name, msg: e.message });
+    toast('Erro ao concluir. Veja o Debug para detalhes.');
     btn.innerHTML = 'Concluir envio de documentos →';
     btn.disabled = false;
   }
@@ -2715,21 +2784,63 @@ document.addEventListener('DOMContentLoaded', function() {
 // ========================================
 async function chamarAPI(acao, dados) {
   if (API_URL === 'SUA_URL_APPS_SCRIPT_AQUI') {
+    dbg('API em modo simulação — ' + acao, 'aviso');
     return simularAPI(acao, dados);
   }
+
+  const payload = JSON.stringify({ acao, ...dados });
+  dbg('→ ' + acao, 'api', { payload: JSON.parse(payload) });
+
+  const t0 = Date.now();
+  let res, texto;
+
   try {
-    const payload = JSON.stringify({ acao, ...dados });
-    const res = await fetch(API_URL, {
+    res = await fetch(API_URL, {
       method:   'POST',
       redirect: 'follow',
       body:     payload,
     });
-    const text = await res.text();
-    return JSON.parse(text);
   } catch(e) {
-    console.error('chamarAPI erro:', e);
+    const detalhe = {
+      nome:       e.name,
+      mensagem:   e.message,
+      stack:      e.stack || '—',
+      causa:      e.cause ? String(e.cause) : '—',
+      dica:       e.name === 'TypeError' && e.message.includes('fetch')
+                    ? 'Falha de rede ou CORS bloqueado antes de chegar ao servidor'
+                    : 'Verifique a URL e a implantação do Apps Script',
+    };
+    dbg('fetch FALHOU (' + acao + ')', 'erro', detalhe);
     throw e;
   }
+
+  const ms = Date.now() - t0;
+  dbg('← HTTP ' + res.status + '  ' + ms + 'ms  (' + acao + ')', res.ok ? 'net' : 'aviso');
+
+  try {
+    texto = await res.text();
+  } catch(e) {
+    dbg('Falha ao ler resposta', 'erro', e.message);
+    throw e;
+  }
+
+  dbg('Resposta bruta (' + acao + ')', 'net', texto.length > 600 ? texto.substring(0,600)+'…' : texto);
+
+  let json;
+  try {
+    json = JSON.parse(texto);
+  } catch(e) {
+    dbg('JSON inválido na resposta (' + acao + ')', 'erro', { textoRecebido: texto.substring(0,300) });
+    throw new Error('Resposta não é JSON válido: ' + texto.substring(0,100));
+  }
+
+  if (json.erro) {
+    dbg('Apps Script retornou erro (' + acao + ')', 'aviso', json);
+  } else {
+    dbg('✔ ' + acao + ' OK', 'ok', json);
+  }
+
+  return json;
 }
 
 // Simulação para desenvolvimento
@@ -2773,23 +2884,45 @@ function simularAPI(acao, dados) {
   Essa Vaga É Minha — v25 · Adriano Aquino Advocacia
 </div>
 
-<!-- BOTÃO DE DEBUG — remover em produção -->
-<button onclick="var p=document.getElementById('debug-panel');p.style.display=p.style.display==='none'?'block':'none';"
+<!-- BOTÃO DE DEBUG -->
+<button onclick="abrirDebug()"
   style="position:fixed;bottom:40px;right:10px;z-index:9998;background:#112240;border:1px solid #c9a84c;color:#c9a84c;font-size:0.65rem;padding:4px 8px;border-radius:6px;cursor:pointer;opacity:0.7;">
   🛠 DBG
 </button>
 
 <!-- PAINEL DE DEBUG -->
-<div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0a1628;border-top:2px solid #c9a84c;z-index:9999;max-height:40vh;overflow:hidden;font-family:monospace;">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#112240;">
-    <span style="color:#c9a84c;font-size:0.72rem;font-weight:700;">DEBUG v12</span>
-    <div style="display:flex;gap:8px;">
-      <button onclick="document.getElementById('debug-box').innerHTML=''" style="background:none;border:1px solid #444;color:#888;font-size:0.65rem;padding:2px 8px;border-radius:4px;cursor:pointer;">Limpar</button>
-      <button onclick="document.getElementById('debug-panel').style.display='none'" style="background:none;border:1px solid #444;color:#888;font-size:0.65rem;padding:2px 8px;border-radius:4px;cursor:pointer;">Fechar</button>
+<div id="debug-panel" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#080e1a;border-top:2px solid #c9a84c;z-index:9999;max-height:55vh;overflow:hidden;font-family:monospace;">
+
+  <!-- Barra de título -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:#0f1e36;border-bottom:1px solid rgba(201,168,76,0.2);">
+    <span id="dbg-titulo" style="color:#c9a84c;font-size:0.7rem;font-weight:700;">DEBUG v25  [0]</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button onclick="dbgEstado()" style="background:#0a1628;border:1px solid #2a4a6a;color:#7eb8f7;font-size:0.6rem;padding:2px 7px;border-radius:4px;cursor:pointer;">📋 Estado</button>
+      <button onclick="dbgPing()" style="background:#0a1628;border:1px solid #2a4a6a;color:#c07ef7;font-size:0.6rem;padding:2px 7px;border-radius:4px;cursor:pointer;">⚡ Ping</button>
+      <button onclick="document.getElementById('debug-box').innerHTML='';_dbgContador=0;document.getElementById('dbg-titulo').textContent='DEBUG v25  [0]';" style="background:#0a1628;border:1px solid #333;color:#666;font-size:0.6rem;padding:2px 7px;border-radius:4px;cursor:pointer;">🗑 Limpar</button>
+      <button onclick="var t=document.getElementById('debug-box').innerText;navigator.clipboard&&navigator.clipboard.writeText(t).then(function(){dbg('Log copiado!','ok')});" style="background:#0a1628;border:1px solid #333;color:#666;font-size:0.6rem;padding:2px 7px;border-radius:4px;cursor:pointer;">📋 Copiar</button>
+      <button onclick="document.getElementById('debug-panel').style.display='none';" style="background:#0a1628;border:1px solid #333;color:#888;font-size:0.6rem;padding:2px 7px;border-radius:4px;cursor:pointer;">✕</button>
     </div>
   </div>
-  <div id="debug-box" style="padding:8px 12px;overflow-y:auto;max-height:calc(40vh - 32px);"></div>
+
+  <!-- Info rápida da URL -->
+  <div style="padding:3px 10px;background:#0a1628;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <span id="dbg-api-url" style="font-size:0.58rem;color:#2a4a3a;word-break:break-all;">…</span>
+  </div>
+
+  <!-- Log -->
+  <div id="debug-box" style="padding:6px 10px;overflow-y:auto;max-height:calc(55vh - 62px);"></div>
 </div>
+
+<script>
+(function() {
+  var el = document.getElementById('dbg-api-url');
+  if (el && typeof API_URL !== 'undefined') {
+    el.textContent = 'URL: ' + API_URL;
+    el.style.color = API_URL.includes('SUA_URL') ? '#e05252' : '#3a8a5a';
+  }
+})();
+</script>
 
 </body>
 </html>
