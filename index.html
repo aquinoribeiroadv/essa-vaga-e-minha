@@ -1546,6 +1546,7 @@ var estado = {
   email: '',
   nome: '',
   senhaGerada: '',
+  token: '',
   cliente: null,
   etapas: { 1: false, 2: false, 3: false, 4: false },
 };
@@ -1608,11 +1609,10 @@ async function _iniciarAcessoReal() {
     if (res.existe) {
       // CPF cadastrado — guardar email cadastrado e mostrar tela de senha
       // NAO enviar email automaticamente — cliente pode ter a senha guardada
-      estado.email = res.email;
+      estado.email = res.email; // vem mascarado do servidor
       estado.nome  = res.nome;
-      // Buscar senha atual do backend para validar o que o cliente digitar
-      const resSenha = await chamarAPI('buscarSenha', { cpf });
-      estado.senhaGerada = resSenha?.senha || '';
+      // A senha digitada é conferida no servidor (ação 'entrar'), não aqui
+      estado.senhaGerada = '';
       document.getElementById('cpf-display-existente').textContent = formatarCPFTexto(cpf);
       document.getElementById('msg-bem-vindo').textContent =
         (res.nome ? 'Ola, ' + res.nome.split(' ')[0] + '! ' : '') +
@@ -1624,7 +1624,7 @@ async function _iniciarAcessoReal() {
       mostrarTela('tela-novo-email');
     }
   } catch(e) {
-    dbg('Falha em verificarCPF/buscarSenha', 'erro', { nome: e.name, msg: e.message });
+    dbg('Falha em verificarCPF', 'erro', { nome: e.name, msg: e.message });
     toast('Erro de conexao. Veja o painel Debug (🛠 DBG) para detalhes.');
   } finally {
     btn.innerHTML = 'Continuar →';
@@ -1662,7 +1662,8 @@ async function enviarSenhaNovo() {
     // e este email digitado e tratado como novo cadastro
     const senha = gerarSenha6();
     const res = await chamarAPI('enviarSenha', { cpf: estado.cpf, email, senha, tipo: 'novo' });
-    estado.senhaGerada = res?.senha || senha;
+    if (res?.erro) throw new Error(res.erro);
+    estado.senhaGerada = senha;
     document.getElementById('email-enviado').textContent = email;
     mostrarTela('tela-confirmar-senha');
     setTimeout(() => document.querySelectorAll('.cod-novo')[0]?.focus(), 300);
@@ -1680,7 +1681,7 @@ async function reenviarSenhaNovo() {
       cpf: estado.cpf, email: estado.email,
       senha: estado.senhaGerada, tipo: 'novo'
     });
-    estado.senhaGerada = res?.senha || estado.senhaGerada;
+    if (res?.erro) throw new Error(res.erro);
     toast('Senha reenviada para o seu email!');
     document.querySelectorAll('.cod-novo').forEach(i => i.value = '');
     document.querySelectorAll('.cod-novo')[0]?.focus();
@@ -1712,17 +1713,28 @@ function moveFocoNovo(input, idx) {
 // ========================================
 // VERIFICAR SENHAS
 // ========================================
+// A senha é conferida no servidor; se estiver certa, ele devolve um passe (token)
+// que acompanha as próximas chamadas.
+async function conferirSenhaNoServidor(digitado) {
+  const res = await chamarAPI('entrar', { cpf: estado.cpf, senha: digitado });
+  if (!res || !res.token) {
+    toast('❌ ' + (res && res.erro ? res.erro : 'Senha incorreta. Verifique e tente novamente.'));
+    return false;
+  }
+  estado.token = res.token;
+  return true;
+}
+
 async function verificarSenha() {
   const digitado = Array.from(document.querySelectorAll('.cod')).map(i => i.value).join('');
-  if (digitado !== estado.senhaGerada) {
-    toast('❌ Senha incorreta. Verifique e tente novamente.');
-    return;
-  }
   const btn = document.getElementById('btn-verificar');
   btn.innerHTML = '<span class="spinner"></span>Entrando...';
   btn.disabled = true;
   try {
+    if (!(await conferirSenhaNoServidor(digitado))) return;
     await entrarNoPainel('retorno');
+  } catch(e) {
+    toast('Erro de conexão. Tente novamente.');
   } finally {
     btn.innerHTML = 'Entrar →';
     btn.disabled = false;
@@ -1731,15 +1743,14 @@ async function verificarSenha() {
 
 async function verificarSenhaNovo() {
   const digitado = Array.from(document.querySelectorAll('.cod-novo')).map(i => i.value).join('');
-  if (digitado !== estado.senhaGerada) {
-    toast('❌ Senha incorreta. Verifique e tente novamente.');
-    return;
-  }
   const btn = document.getElementById('btn-verificar-novo');
   btn.innerHTML = '<span class="spinner"></span>Entrando...';
   btn.disabled = true;
   try {
+    if (!(await conferirSenhaNoServidor(digitado))) return;
     await entrarNoPainel('novo');
+  } catch(e) {
+    toast('Erro de conexão. Tente novamente.');
   } finally {
     btn.innerHTML = 'Entrar →';
     btn.disabled = false;
@@ -1751,9 +1762,9 @@ async function reenviarSenha() {
   try {
     const res = await chamarAPI('enviarSenha', {
       cpf: estado.cpf, email: estado.email,
-      senha: estado.senhaGerada, nome: estado.nome, tipo: 'retorno'
+      senha: '', nome: estado.nome, tipo: 'retorno'
     });
-    estado.senhaGerada = res?.senha || estado.senhaGerada;
+    if (res?.erro) throw new Error(res.erro);
     toast('Senha reenviada para o seu email!');
     document.querySelectorAll('.cod').forEach(i => i.value = '');
     document.querySelectorAll('.cod')[0]?.focus();
@@ -2002,7 +2013,6 @@ function irParaEtapa(n) {
 // ========================================
 // ETAPA 4 — ASSINATURA DIGITAL (AUTENTIQUE)
 // ========================================
-const AUTENTIQUE_TOKEN = 'c1ba69a3e872b156cecd65a4ae5b8553fd2a604f8049639cdd22c595a4cb41bf';
 let documentosAssinatura = []; // lista de docs gerados
 let autentiqueDocIds     = []; // IDs retornados pelo Autentique
 
@@ -2882,8 +2892,11 @@ async function chamarAPI(acao, dados) {
     return simularAPI(acao, dados);
   }
 
-  const payload = JSON.stringify({ acao, ...dados });
-  dbg('→ ' + acao, 'api', { payload: JSON.parse(payload) });
+  const payload = JSON.stringify(estado.token ? { acao, ...dados, token: estado.token } : { acao, ...dados });
+  const payloadDbg = JSON.parse(payload);
+  if (payloadDbg.senha) payloadDbg.senha = '******';
+  if (payloadDbg.token) payloadDbg.token = '(passe)';
+  dbg('→ ' + acao, 'api', { payload: payloadDbg });
 
   const t0 = Date.now();
   let res, texto;
@@ -2928,6 +2941,12 @@ async function chamarAPI(acao, dados) {
     throw new Error('Resposta não é JSON válido: ' + texto.substring(0,100));
   }
 
+  if (json.sessaoExpirada) {
+    estado.token = '';
+    toast('Sua sessão expirou. Entre novamente com seu CPF e senha.');
+    mostrarTela('tela-inicio');
+    throw new Error('Sessão expirada');
+  }
   if (json.erro) {
     dbg('Apps Script retornou erro (' + acao + ')', 'aviso', json);
   } else {
